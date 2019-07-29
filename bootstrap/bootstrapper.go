@@ -5,8 +5,8 @@ import (
 	"time"
 	"io/ioutil"
 
-	"lottery/conf"
-	"lottery/cron"
+	"eilieili/conf"
+	"eilieili/cron"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"

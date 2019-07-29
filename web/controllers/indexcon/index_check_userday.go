@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"time"
 
-	"lottery/conf"
-	"lottery/models"
-	"lottery/services"
-	"lottery/web/utils"
+	"eilieili/conf"
+	"eilieili/models"
+	"eilieili/services"
+	"eilieili/web/utils"
 )
 
 func (api *LuckyApi) checkUserday(uid int, num int64) bool {

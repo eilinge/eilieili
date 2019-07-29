@@ -7,7 +7,7 @@ package admincon
 import (
 	"github.com/kataras/iris"
 
-	"lottery/services"
+	"eilieili/services"
 
 	"github.com/kataras/iris/mvc"
 )

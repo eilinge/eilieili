@@ -3,8 +3,8 @@ package indexcon
 import (
 	"time"
 
-	"lottery/models"
-	"lottery/services"
+	"eilieili/models"
+	"eilieili/services"
 )
 
 func (api *LuckyApi) checkBlackip(ip string) (bool, *models.LtBlackip) {

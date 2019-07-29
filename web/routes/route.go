@@ -3,11 +3,11 @@ package routes
 import (
 	"github.com/kataras/iris/mvc"
 
-	"lottery/bootstrap"
-	"lottery/services"
-	"lottery/web/controllers/admincon"
-	"lottery/web/controllers/indexcon"
-	"lottery/web/middleware"
+	"eilieili/bootstrap"
+	"eilieili/services"
+	"eilieili/web/controllers/admincon"
+	"eilieili/web/controllers/indexcon"
+	"eilieili/web/middleware"
 )
 
 // Configure registers the necessary routes to the app.

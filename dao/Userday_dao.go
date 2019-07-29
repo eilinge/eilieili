@@ -3,7 +3,7 @@ package dao
 import (
 	"github.com/go-xorm/xorm"
 
-	"lottery/models"
+	"eilieili/models"
 )
 
 // UserdayDao database userday

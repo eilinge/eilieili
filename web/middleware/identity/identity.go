@@ -3,7 +3,7 @@ package identity
 import (
 	"github.com/kataras/iris"
 
-	"lottery/bootstrap"
+	"eilieili/bootstrap"
 )
 
 // New returns a new handler which adds some headers and view data

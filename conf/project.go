@@ -55,4 +55,4 @@ var SysTimeLocation, _ = time.LoadLocation("Asia/Chongqing")
 var SignSecret = []byte("0123456789abcdef")
 
 // cookie中的加密验证密钥
-var CookieSecret = "hellolottery"
+var CookieSecret = "helloeilieili"

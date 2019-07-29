@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	"lottery/datasource"
-	"lottery/comm"
+	"eilieili/datasource"
+	"eilieili/comm"
 )
 
 const ipFrameSize = 2

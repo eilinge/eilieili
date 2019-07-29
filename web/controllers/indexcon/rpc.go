@@ -21,11 +21,11 @@ import (
 	"regexp"
 	"time"
 
-	"lottery/comm"
-	"lottery/rpc"
-	"lottery/services"
+	"eilieili/comm"
+	// "eilieili/rpc"
+	"eilieili/services"
 
-	// "lottery/web/controllers/indexcon"
+	// "eilieili/web/controllers/indexcon"
 
 	// "git.apache.org/thrift/lib/go/thrift"
 	"github.com/apache/thrift/lib/go/thrift"

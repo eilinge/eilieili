@@ -10,10 +10,10 @@ import (
 	// "strconv"
 	"fmt"
 
-	"lottery/comm"
-	"lottery/models"
-	"lottery/services"
-	// "lottery/conf"
+	"eilieili/comm"
+	"eilieili/models"
+	"eilieili/services"
+	// "eilieili/conf"
 )
 
 // IndexController ...

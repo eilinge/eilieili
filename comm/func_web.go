@@ -7,11 +7,11 @@ import (
 	"net/url"
 	"strconv"
 	"fmt"
-	"lottery/conf"
+	"eilieili/conf"
 	"crypto/md5"
 	"log"
 
-	"lottery/models"
+	"eilieili/models"
 )
 
 // ClientIP get user host
@@ -28,7 +28,7 @@ func Redirect(writer http.ResponseWriter, url string) {
 
 // GetLoginUser ...
 func GetLoginUser(request *http.Request) *models.ObjLoginuser {
-	c, err := request.Cookie("lottery_loginuser")
+	c, err := request.Cookie("eilieili_loginuser")
 	if err != nil {
 		return nil
 	}
@@ -65,7 +65,7 @@ func GetLoginUser(request *http.Request) *models.ObjLoginuser {
 func SetLoginuser(writer http.ResponseWriter, loginuser *models.ObjLoginuser) {
 	if loginuser == nil || loginuser.Uid < 1 {
 		c := &http.Cookie{
-			Name: "lottery_loginuser",
+			Name: "eilieili_loginuser",
 			Value: "",
 			Path: "/",
 			MaxAge: -1,
@@ -84,7 +84,7 @@ func SetLoginuser(writer http.ResponseWriter, loginuser *models.ObjLoginuser) {
 	params.Add("sign", loginuser.Sign)
 
 	c := &http.Cookie{
-		Name: "lottery_loginuser",
+		Name: "eilieili_loginuser",
 		Value: params.Encode(),
 		Path:"/",
 	}

@@ -7,15 +7,16 @@ curl http://localhost:8888/lucky
 */
 import (
 	"fmt"
-	"lottery/bootstrap"
-	"lottery/web/middleware/identity"
-	"lottery/web/routes"
+
+	"eilieili/bootstrap"
+	"eilieili/web/middleware/identity"
+	"eilieili/web/routes"
 
 	"github.com/kataras/iris"
 	// "github.com/kataras/iris/mvc"
 )
 
-type lotteryController struct {
+type eilieiliController struct {
 	Ctx iris.Context
 }
 

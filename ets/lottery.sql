@@ -1,6 +1,6 @@
-drop database if exists lottery;
-create database lottery character set utf8;
-use lottery
+drop database if exists eilieili;
+create database eilieili character set utf8;
+use eilieili
 
 drop table if exists blackip;
 drop table if exists code;
@@ -94,7 +94,7 @@ create table userday
 );
 
 -- alter table vote comment '投票表，一个账户一个图片，只能投一票，一票代表30pxc';
--- CREATE UNIQUE INDEX vote_uindex ON lottery.vote (address,content_hash);
+-- CREATE UNIQUE INDEX vote_uindex ON eilieili.vote (address,content_hash);
 
 delete from code;
 delete from gift;

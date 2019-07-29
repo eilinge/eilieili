@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 
-	"lottery/conf"
+	"eilieili/conf"
 )
 
 // NowUnix 当前时间的时间戳

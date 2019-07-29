@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"lottery/datasource"
+	"eilieili/datasource"
 )
 
 /* 防止同一用户的重入

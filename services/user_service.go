@@ -8,10 +8,10 @@ import (
 	"log"
 	"sync"
 
-	"lottery/comm"
-	"lottery/dao"
-	"lottery/datasource"
-	"lottery/models"
+	"eilieili/comm"
+	"eilieili/dao"
+	"eilieili/datasource"
+	"eilieili/models"
 
 	"github.com/gomodule/redigo/redis"
 )

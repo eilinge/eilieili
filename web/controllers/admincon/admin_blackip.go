@@ -7,9 +7,9 @@ package admincon
 import (
 	"fmt"
 	"log"
-	"lottery/comm"
-	"lottery/models"
-	"lottery/services"
+	"eilieili/comm"
+	"eilieili/models"
+	"eilieili/services"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"

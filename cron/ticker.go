@@ -1,9 +1,9 @@
 package cron
 
 import (
-	"lottery/comm"
-	"lottery/services"
-	"lottery/web/utils"
+	"eilieili/comm"
+	"eilieili/services"
+	"eilieili/web/utils"
 	"time"
 	"log"
 )

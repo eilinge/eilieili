@@ -3,7 +3,7 @@ package datasource
 import (
 	"fmt"
 	"log"
-	"lottery/conf"
+	"eilieili/conf"
 	"sync"
 	"time"
 

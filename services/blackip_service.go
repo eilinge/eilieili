@@ -8,11 +8,11 @@ import (
 	"log"
 	"sync"
 
-	"lottery/comm"
-	"lottery/dao"
-	"lottery/datasource"
-	"lottery/models"
-	
+	"eilieili/comm"
+	"eilieili/dao"
+	"eilieili/datasource"
+	"eilieili/models"
+
 	"github.com/gomodule/redigo/redis"
 )
 
@@ -35,7 +35,7 @@ type blackipService struct {
 	dao *dao.BlackipDao
 }
 
-// NewBlackipService BlackipService entance 
+// NewBlackipService BlackipService entance
 func NewBlackipService() BlackipService {
 	return &blackipService{
 		dao: dao.NewBlackipDao(datasource.InstanceDbMaster()),
@@ -79,7 +79,7 @@ func (s *blackipService) GetByIp(ip string) *models.LtBlackip {
 		}
 		s.setByCache(data)
 	}
-	
+
 	return data
 }
 
@@ -108,7 +108,7 @@ func (s *blackipService) getByCache(ip string) *models.LtBlackip {
 
 	data := &models.LtBlackip{
 		Id:         int(comm.GetInt64FromStringMap(dataMap, "Id", 0)),
-		Ip:   dataIP,
+		Ip:         dataIP,
 		Blacktime:  int(comm.GetInt64FromStringMap(dataMap, "Blacktime", 0)),
 		SysCreated: int(comm.GetInt64FromStringMap(dataMap, "SysCreated", 0)),
 		SysUpdated: int(comm.GetInt64FromStringMap(dataMap, "SysUpdated", 0)),
