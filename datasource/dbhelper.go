@@ -3,8 +3,9 @@ package datasource
 import (
 	"fmt"
 	"log"
-	"eilieili/conf"
 	"sync"
+
+	"eilieili/configs"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
@@ -30,13 +31,13 @@ func InstanceDbMaster() *xorm.Engine {
 
 func NewDbMaster() *xorm.Engine {
 	sourceName := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8",
-		conf.DbMaster.User,
-		conf.DbMaster.Pwd,
-		conf.DbMaster.Host,
-		conf.DbMaster.Port,
-		conf.DbMaster.Database)
+		configs.DbMaster.User,
+		configs.DbMaster.Pwd,
+		configs.DbMaster.Host,
+		configs.DbMaster.Port,
+		configs.DbMaster.Database)
 
-	instance, err := xorm.NewEngine(conf.DriverName, sourceName)
+	instance, err := xorm.NewEngine(configs.DriverName, sourceName)
 	if err != nil {
 		log.Fatal("dbhelper.NewDbMaster NewEngine error ", err)
 		return nil

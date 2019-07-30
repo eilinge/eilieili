@@ -15,7 +15,7 @@ import (
 var cachedaccountContentList = make(map[string]*models.AccountContent)
 var cachedaccountContentLock = sync.Mutex{}
 
-// accountContentService interface methods
+// AccountContentService interface methods
 type AccountContentService interface {
 	Get(id int) *models.AccountContent
 	Create(data *models.AccountContent) error
@@ -23,13 +23,13 @@ type AccountContentService interface {
 }
 
 type accountContentService struct {
-	dao *dao.accountContentDao
+	dao *dao.AccountContentDao
 }
 
-// NewaccountContentService accountContentService entance
-func NewaccountContentService() accountContentService {
+// NewAccountContentService accountContentService entance
+func NewAccountContentService() AccountContentService {
 	return &accountContentService{
-		dao: dao.NewaccountContentDao(datasource.InstanceDbMaster()),
+		dao: dao.NewAccountContentDao(datasource.InstanceDbMaster()),
 	}
 }
 

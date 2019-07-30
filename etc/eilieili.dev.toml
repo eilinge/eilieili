@@ -1,0 +1,7 @@
+[eth]
+connstr = "http://localhost:8545"
+keydir = "../../data/keystore"
+fundation = "0x839ce39c7942e33280daede63598c26170bc0d30"
+pxaaddr = "0x738e058e45da33239c5956553eaf3a1a5e7e3191"
+pxcaddr = "0x3Cd0a988b37CA4bC61aF919dcbb3f21A5FD030b2"
+fundationPWD = "eilinge"

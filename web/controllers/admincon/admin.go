@@ -14,16 +14,18 @@ import (
 
 // AdminController 其他用户访问界面
 type AdminController struct {
-	Ctx            iris.Context // 解析前端传来的数据
+	Ctx                   iris.Context // 解析前端传来的数据
+	ServiceAccount        services.AccountService
+	ServiceAccountContent services.AccountContentService
+	ServiceBidwinner      services.BidwinnerService
+	ServiceVote           services.VoteService
+
 	ServiceUser    services.UserService
-	ServiceGift    services.GiftService
-	ServiceCode    services.CodeService
-	ServiceResult  services.ResultService
 	ServiceUserday services.UserdayService
 	ServiceBlackip services.BlackipService
 }
 
-// Get http://localhost:8080/
+// Get http://localhost:8080/admin
 func (c *AdminController) Get() mvc.Result {
 	return mvc.View{
 		Name: "admin/index.html",

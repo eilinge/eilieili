@@ -26,13 +26,13 @@ type AuctionService interface {
 }
 
 type auctionService struct {
-	dao *dao.auctionDao
+	dao *dao.AuctionDao
 }
 
-// NewauctionService auctionService entance
-func NewauctionService() auctionService {
+// NewAuctionService auctionService entance
+func NewAuctionService() AuctionService {
 	return &auctionService{
-		dao: dao.NewauctionDao(datasource.InstanceDbMaster()),
+		dao: dao.NewAuctionDao(datasource.InstanceDbMaster()),
 	}
 }
 

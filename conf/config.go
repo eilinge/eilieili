@@ -1,4 +1,4 @@
-package configs
+package conf
 
 import (
 	"flag"
@@ -17,21 +17,7 @@ var (
 
 // ServerConfig ...
 type ServerConfig struct {
-	Common *CommonConfig
-	Db     *DbConfig
-	Eth    *EthConfig
-}
-
-// CommonConfig ...
-type CommonConfig struct {
-	Port      string
-	LogFormat string
-}
-
-// DbConfig  ...
-type DbConfig struct {
-	Driver  string
-	Connstr string
+	Eth *EthConfig
 }
 
 // EthConfig ...
@@ -52,8 +38,9 @@ func usage() {
 var Config *ServerConfig //引用配置文件结构
 
 func init() {
-	fmt.Println("call config.init")
+	fmt.Println("eileili call config.init")
 	Config = GetConfig()
+
 }
 
 // GetConfig ...

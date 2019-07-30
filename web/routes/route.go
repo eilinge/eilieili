@@ -1,60 +1,52 @@
 package routes
 
 import (
-	"github.com/kataras/iris/mvc"
-
 	"eilieili/bootstrap"
 	"eilieili/services"
 	"eilieili/web/controllers/admincon"
 	"eilieili/web/controllers/indexcon"
 	"eilieili/web/middleware"
+
+	"github.com/kataras/iris/mvc"
 )
 
 // Configure registers the necessary routes to the app.
 func Configure(b *bootstrap.Bootstrapper) {
+	accountService := services.NewAccountService()
+	accountContentvice := services.NewAccountContentService()
+	auctionService := services.NewAuctionService()
+	voteService := services.NewVoteService()
+
 	userService := services.NewUserService()
-	giftService := services.NewGiftService()
-	codeService := services.NewCodeService()
-	resultService := services.NewResultService()
 	userdayService := services.NewUserdayService()
 	blackipService := services.NewBlackipService()
 
 	// 路由分组IndexController/AdminController
 	// "/" IndexController
 	index := mvc.New(b.Party("/"))
-	index.Register(userService,
-		giftService,
-		codeService,
-		resultService,
+	index.Register(
+		accountService,
+		accountContentvice,
+		auctionService,
+		voteService,
+		userService,
 		userdayService,
 		blackipService)
 	index.Handle(new(indexcon.IndexController))
 
+	// 管理用户/ip黑名单,
 	// "/admin" AdminController
 	admin := mvc.New(b.Party("/admin"))
 	admin.Router.Use(middleware.BasicAuth)
-	admin.Register(userService,
-		giftService,
-		codeService,
-		resultService,
+	admin.Register(
+		accountService,
+		accountContentvice,
+		auctionService,
+		voteService,
+		userService,
 		userdayService,
 		blackipService)
 	admin.Handle(new(admincon.AdminController))
-
-	// "/admin/gift" AdminController
-	adminGift := admin.Party("/gift")
-	adminGift.Register(giftService)
-	adminGift.Handle(new(admincon.AdminGiftController))
-
-	// "/admin/code" AdminController
-	adminCode := admin.Party("/code")
-	adminCode.Register(codeService)
-	adminCode.Handle(new(admincon.AdminCodeController))
-
-	// "/admin/result" AdminController
-	adminResult := admin.Party("/result")
-	adminResult.Register(resultService)
-	adminResult.Handle(new(admincon.AdminResultController))
 
 	// "/admin/user" AdminController
 	adminUser := admin.Party("/user")
@@ -67,9 +59,9 @@ func Configure(b *bootstrap.Bootstrapper) {
 	adminBlackip.Handle(new(admincon.AdminBlackipController))
 
 	// "/rpc"
-	rpc := mvc.New(b.Party("rpc"))
-	rpc.Register(userService, giftService, codeService, resultService, userdayService, blackipService)
-	rpc.Handle(new(indexcon.IndexController))
+	// rpc := mvc.New(b.Party("rpc"))
+	// rpc.Register(userService, giftService, codeService, resultService, userdayService, blackipService)
+	// rpc.Handle(new(indexcon.IndexController))
 
 	// 传统设置路由
 	//b.Get("/follower/{id:long}", GetFollowerHandler)

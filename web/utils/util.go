@@ -3,8 +3,9 @@ package utils
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"strings"
+
+	"github.com/kataras/iris"
 )
 
 const (
@@ -72,9 +73,9 @@ type Resp struct {
 }
 
 // ResponseData resp数据响应
-func ResponseData(c echo.Context, resp *Resp) {
+func ResponseData(c iris.Context, resp *Resp) {
 	resp.ErrMsg = RecodeText(resp.Errno)
-	c.JSON(http.StatusOK, resp) // 响应给终端
+	c.JSON(iris.Map{"Errno": resp.Errno, "ErrMsg": resp.ErrMsg, "Data": resp.Data}) // 响应给终端
 }
 
 // GetFileName 读取dir目录下文件名带address的文件

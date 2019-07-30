@@ -8,14 +8,15 @@ import (
 
 	"eilieili/dao"
 	"eilieili/datasource"
+	"eilieili/models"
 )
 
 // IP信息，可以缓存(本地或者redis)，有更新的时候，再根据具体情况更新缓存
 var cachedvoteList = make(map[string]*models.Vote)
 var cachedvoteLock = sync.Mutex{}
 
-// voteService interface methods
-type voteService interface {
+// VoteService interface methods
+type VoteService interface {
 	Get(id int) *models.Vote
 	Update(data *models.Vote, columns []string) error
 	Create(data *models.Vote) error
@@ -23,13 +24,13 @@ type voteService interface {
 }
 
 type voteService struct {
-	dao *dao.voteDao
+	dao *dao.VoteDao
 }
 
-// NewvoteService voteService entance
-func NewvoteService() voteService {
+// NewVoteService voteService entance
+func NewVoteService() VoteService {
 	return &voteService{
-		dao: dao.NewvoteDao(datasource.InstanceDbMaster()),
+		dao: dao.NewVoteDao(datasource.InstanceDbMaster()),
 	}
 }
 
@@ -38,7 +39,7 @@ func (s *voteService) Get(id int) *models.Vote {
 }
 
 func (s *voteService) Update(data *models.Vote, columns []string) error {
-	return s.dao.GUpdate(data)
+	return s.dao.Update(data, columns)
 }
 
 func (s *voteService) Create(data *models.Vote) error {
@@ -48,4 +49,3 @@ func (s *voteService) Create(data *models.Vote) error {
 func (s *voteService) GetByTokenid(id int) *models.Vote {
 	return s.dao.GetByTokenid(id)
 }
-

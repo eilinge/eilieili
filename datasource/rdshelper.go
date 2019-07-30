@@ -3,9 +3,10 @@ package datasource
 import (
 	"fmt"
 	"log"
-	"eilieili/conf"
 	"sync"
 	"time"
+
+	"eilieili/configs"
 
 	"github.com/gomodule/redigo/redis"
 )
@@ -59,7 +60,7 @@ func (rds *RedisConn) ShowDebug(b bool) {
 func NewCache() *RedisConn {
 	pool := redis.Pool{
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", conf.RdsCache.Host, conf.RdsCache.Port))
+			c, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", configs.RdsCache.Host, configs.RdsCache.Port))
 			if err != nil {
 				log.Fatal("rdshelper.NewCache Dial error: ", err)
 				return nil, err

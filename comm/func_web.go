@@ -1,16 +1,15 @@
 package comm
 
-
 import (
-	"net/http"
+	"crypto/md5"
+	"fmt"
+	"log"
 	"net"
+	"net/http"
 	"net/url"
 	"strconv"
-	"fmt"
-	"eilieili/conf"
-	"crypto/md5"
-	"log"
 
+	"eilieili/configs"
 	"eilieili/models"
 )
 
@@ -41,18 +40,18 @@ func GetLoginUser(request *http.Request) *models.ObjLoginuser {
 		return nil
 	}
 	now, err := strconv.Atoi(params.Get("now"))
-	if err != nil || NowUnix() - now > 86400*30 {
+	if err != nil || NowUnix()-now > 86400*30 {
 		return nil
 	}
 
 	loginuser := &models.ObjLoginuser{
-		Uid: uid,
+		Uid:      uid,
 		Username: params.Get("username"),
-		Now: now,
-		Ip: ClientIP(request),
-		Sign: params.Get("sign"),
+		Now:      now,
+		Ip:       ClientIP(request),
+		Sign:     params.Get("sign"),
 	}
-	
+
 	sign := createLoginuserSign(loginuser)
 	if sign != loginuser.Sign {
 		log.Println("func_web GetLoginuser createloginusersign not signed", sign, loginuser.Sign)
@@ -65,9 +64,9 @@ func GetLoginUser(request *http.Request) *models.ObjLoginuser {
 func SetLoginuser(writer http.ResponseWriter, loginuser *models.ObjLoginuser) {
 	if loginuser == nil || loginuser.Uid < 1 {
 		c := &http.Cookie{
-			Name: "eilieili_loginuser",
-			Value: "",
-			Path: "/",
+			Name:   "eilieili_loginuser",
+			Value:  "",
+			Path:   "/",
 			MaxAge: -1,
 		}
 		http.SetCookie(writer, c)
@@ -84,16 +83,16 @@ func SetLoginuser(writer http.ResponseWriter, loginuser *models.ObjLoginuser) {
 	params.Add("sign", loginuser.Sign)
 
 	c := &http.Cookie{
-		Name: "eilieili_loginuser",
+		Name:  "eilieili_loginuser",
 		Value: params.Encode(),
-		Path:"/",
+		Path:  "/",
 	}
 	http.SetCookie(writer, c)
 }
 
 func createLoginuserSign(loginuser *models.ObjLoginuser) string {
 	str := fmt.Sprintf("uid=%d&username=%s&secret=%s&now=%d",
-	loginuser.Uid, loginuser.Username, conf.SignSecret, loginuser.Now)
+		loginuser.Uid, loginuser.Username, configs.SignSecret, loginuser.Now)
 
 	sign := fmt.Sprintf("%x", md5.Sum([]byte(str)))
 

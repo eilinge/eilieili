@@ -1,11 +1,11 @@
 package bootstrap
 
 import (
+	"io/ioutil"
 	"strconv"
 	"time"
-	"io/ioutil"
 
-	"eilieili/conf"
+	"eilieili/configs"
 	"eilieili/cron"
 
 	"github.com/kataras/iris"
@@ -47,11 +47,11 @@ func (b *Bootstrapper) SetupViews(viewsDir string) {
 	// 格式化时间
 	htmlEngine.AddFunc("FromUnixtimeShort", func(t int) string {
 		dt := time.Unix(int64(t), int64(0))
-		return dt.Format(conf.SysTimeformShort)
+		return dt.Format(configs.SysTimeformShort)
 	})
 	htmlEngine.AddFunc("FromUnixtime", func(t int) string {
 		dt := time.Unix(int64(t), int64(0))
-		return dt.Format(conf.SysTimeform)
+		return dt.Format(configs.SysTimeform)
 	})
 
 	htmlEngine.AddFunc("PrePage", func(data int) string {
@@ -102,7 +102,7 @@ const (
 	// StaticAssets is the root directory for public assets like images, css, js.
 	StaticAssets = "./public"
 	// Favicon is the relative 9to the "StaticAssets") favicon path for our app.
-	Favicon      = "/favicon.ico"
+	Favicon = "/favicon.ico"
 )
 
 // Bootstrap init
@@ -115,14 +115,14 @@ func (b *Bootstrapper) Bootstrap() *Bootstrapper {
 	b.StaticWeb(StaticAssets[1:], StaticAssets)
 	indexHTML, err := ioutil.ReadFile(StaticAssets + "/index.html")
 	if err == nil {
-		b.StaticContent(StaticAssets[1:] + "/", "text/html",
+		b.StaticContent(StaticAssets[1:]+"/", "text/html",
 			indexHTML)
 	}
 	// 不要把目录末尾"/"省略掉
 	iris.WithoutPathCorrectionRedirection(b.Application)
 
 	b.setupCron()
-	
+
 	// middleware, after static files
 	b.Use(recover.New())
 	b.Use(logger.New())

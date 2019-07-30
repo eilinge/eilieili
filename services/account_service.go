@@ -29,7 +29,7 @@ type accountService struct {
 }
 
 // NewAccountService AccountService entance
-func NewAccountService() accountService {
+func NewAccountService() AccountService {
 	return &accountService{
 		dao: dao.NewAccountDao(datasource.InstanceDbMaster()),
 	}

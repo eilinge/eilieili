@@ -24,13 +24,13 @@ type BidwinnerService interface {
 }
 
 type bidwinnerService struct {
-	dao *dao.bidwinnerDao
+	dao *dao.BidwinnerDao
 }
 
-// NewbidwinnerService bidwinnerService entance
-func NewbidwinnerService() bidwinnerService {
+// NewBidwinnerService bidwinnerService entance
+func NewBidwinnerService() BidwinnerService {
 	return &bidwinnerService{
-		dao: dao.NewbidwinnerDao(datasource.InstanceDbMaster()),
+		dao: dao.NewBidwinnerDao(datasource.InstanceDbMaster()),
 	}
 }
 

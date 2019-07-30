@@ -1,0 +1,62 @@
+<div class="login-box">
+    <div class="yc_login_top">
+        <a href="login.html">
+            <span>登录</span></a>
+        <a href="register.html">
+            <span>注册</span></a>
+    </div>
+    <form action="" class="yc_login_form">
+        <div>
+            <i class="fa fa-envelope" aria-hidden="true"></i>
+            <input type="text" class="yc_login_email" name="email" placeholder="email">
+        </div>
+        <div>
+            <i class="fa fa-user" aria-hidden="true"></i>
+            <input type="text" class="yc_login_username" name="username" placeholder="username">
+        </div>
+        <div>
+            <i class="fa fa-lock" aria-hidden="true"></i>
+            <input
+                type="password"
+                class="yc_login_password"
+                name="identity_id"
+                placeholder="密码">
+        </div>
+    </form>
+
+    <input type="button" class="yc_login_btn" value="register" />
+    <div class="yc_login_bottom">
+        <input type="checkbox">
+        <a href="javascript:;">记住我</a>
+        <a href="javascript:;">忘记密码</a>
+    </div>
+</div>
+
+<script>
+$(function () {
+    $(".yc_login_btn").on("click", function () {
+
+        // 输出以数组形式序列化表单值的结果
+        var datas = $(".yc_login_form").serializeArray();
+        var params = {};
+        for (var i = 0; i < datas.length; i++) {
+            params[datas[i].name] = datas[i].value
+        }
+        console.log("params: ", params)
+        var strParams = JSON.stringify(params);
+        $.ajax({
+            url: "/account",
+            contentType: "application/json",
+            data: strParams,
+            method: "post",
+            success: function (data) {
+                if (data.errno == 0) {
+                    window.location.href = '../user/userindex.html';
+                } else {
+                    alert(data.errmsg);
+                }
+            }
+        })
+    });
+});
+</script>
