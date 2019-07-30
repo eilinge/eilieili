@@ -11,9 +11,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
-
 	"eilieili/comm"
 	"eilieili/conf"
 	"eilieili/eths"
@@ -21,6 +18,11 @@ import (
 	"eilieili/services"
 	"eilieili/web/utils"
 	"eilieili/web/viewmodels"
+
+	"github.com/gorilla/sessions"
+	"github.com/kataras/iris"
+	"github.com/kataras/iris/mvc"
+	"github.com/labstack/echo-contrib/session"
 )
 
 // IndexController ...
@@ -37,9 +39,18 @@ type IndexController struct {
 }
 
 // Get http://localhost:8080/
-func (c *IndexController) Get() mvc.Result {
+func (c *IndexController) Get() {
+	refer := c.Ctx.GetHeader("Referer")
+	if refer == "" {
+		refer = "/public/index.html"
+	}
+	comm.Redirect(c.Ctx.ResponseWriter(), refer)
+}
+
+// GetLogin 登录 GET /login
+func (c *IndexController) GetLogin() mvc.Result {
 	return mvc.View{
-		Name: "shared/login.html",
+		Name: "login.html",
 		Data: iris.Map{
 			"Title":   "管理后台",
 			"Channel": "",
@@ -48,7 +59,19 @@ func (c *IndexController) Get() mvc.Result {
 	}
 }
 
-// PostRegister http://localhost:8080/
+// GGetRegister 登录 GET /register
+func (c *IndexController) GetRegister() mvc.Result {
+	return mvc.View{
+		Name: "register.html",
+		Data: iris.Map{
+			"Title":   "管理后台",
+			"Channel": "",
+		},
+		Layout: "shared/layout.html",
+	}
+}
+
+// PostRegister http://localhost:8080/register
 func (c *IndexController) PostRegister() mvc.Result {
 	//1. 响应数据结构初始化
 	var resp utils.Resp
@@ -67,11 +90,13 @@ func (c *IndexController) PostRegister() mvc.Result {
 	*/
 
 	// 读取表单("submit")
-	err := c.Ctx.ReadForm(&account)
-	if err != nil {
-		log.Println("c.Ctx.ReadForm ERR: ", err)
-	}
+	err := c.Ctx.ReadJSON(&account)
 	// fromValue := c.Ctx.Request().PostForm // 解析form表单
+	if err != nil {
+		// fmt.Println("failed to NewAcc: ", err)
+		resp.Errno = utils.RECODE_IPCERR
+		return nil
+	}
 	fmt.Printf("fromValue: %#v \n", account)
 
 	//3. 操作geth创建账户(account.IdentitiyId->pass)
@@ -92,52 +117,29 @@ func (c *IndexController) PostRegister() mvc.Result {
 	}()
 	//4. 操作Mysql插入数据
 	pwd := fmt.Sprintf("%x", sha256.Sum256([]byte(account.IdentitiyID)))
-	sql := fmt.Sprintf("insert into account(email, username, identity_id, address) values('%s', '%s', '%s', '%s')",
-		account.Email, account.UserName, pwd, address)
-	fmt.Println(sql)
-	// _, err = dbs.Create(sql)
+	newAccount := &models.Account{
+		Email:      account.Email,
+		Username:   account.UserName,
+		IdentityId: pwd,
+		Address:    address,
+	}
+	err = c.ServiceAccount.Create(newAccount)
 	if err != nil {
+		log.Println("index.PostRegister c.ServiceAccount.Create err ", err)
 		resp.Errno = utils.RECODE_DBERR
 		return nil
 	}
 	//5. session处理
-	// sess, _ := session.Get("session", c.Ctx)
-	// sess.Options = &sessions.Options{
-	// 	Path:     "/",
-	// 	MaxAge:   86400 * 7, // 7 days
-	// 	HttpOnly: true,
-	// }
-	// sess.Values["address"] = address
-	// sess.Values["username"] = account.UserName
-	// sess.Save(c.Ctx.Request(), c.Ctx.Response())
-	return nil
+	sess, _ := session.Get("session", c.Ctx)
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7, // 7 days
+		HttpOnly: true,
+	}
+	sess.Values["address"] = address
+	sess.Values["username"] = account.UserName
+	sess.Save(c.Ctx.Request(), c.Ctx.Response())
 
-	return mvc.View{
-		Name: "shared/login.html",
-		Data: iris.Map{
-			"Title":   "管理后台",
-			"Channel": "",
-		},
-		Layout: "shared/layout.html",
-	}
-}
-
-// GetLogin 登录 GET /login
-func (c *IndexController) GetLogin() {
-	// 每次随机生成一个登录用户信息
-	uid := comm.Random(100000)
-	loginuser := models.ObjLoginuser{
-		Uid:      uid,
-		Username: fmt.Sprintf("admin-%d", uid),
-		Now:      comm.NowUnix(),
-		Ip:       comm.ClientIP(c.Ctx.Request()),
-	}
-	refer := c.Ctx.GetHeader("Referer")
-	if refer == "" {
-		refer = "/public/index.html?from=login"
-	}
-	comm.SetLoginuser(c.Ctx.ResponseWriter(), &loginuser)
-	comm.Redirect(c.Ctx.ResponseWriter(), refer)
 }
 
 // GetLogout 退出 GET /logout
@@ -148,4 +150,27 @@ func (c *IndexController) GetLogout() {
 	}
 	comm.SetLoginuser(c.Ctx.ResponseWriter(), nil)
 	comm.Redirect(c.Ctx.ResponseWriter(), refer)
+}
+
+// GetSession session
+func (c *IndexController) GetSession() error {
+	//1. 响应数据结构初始化
+	var resp utils.Resp
+	resp.Errno = utils.RECODE_OK
+	defer utils.ResponseData(c, &resp)
+
+	sess, err := session.Get("session", c.Context)
+	if err != nil {
+		fmt.Println("failed to get session")
+		resp.Errno = utils.RECODE_SESSIONERR
+		return err
+	}
+	address := sess.Values["address"]
+	// username := sess.Values["username"]
+	if address == nil {
+		fmt.Println("failed to get address")
+		resp.Errno = utils.RECODE_SESSIONERR
+		return err
+	}
+	return nil
 }

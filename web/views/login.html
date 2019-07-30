@@ -1,0 +1,69 @@
+<div class="login-box">
+    <div class="yc_login_top">
+        <a href="/login">
+            <span>登录</span></a>
+        <a href="/register">
+            <span>注册</span></a>
+    </div>
+    <form action="" class="login_form">
+        <div class="yc_login_form" >
+            <i class="fa fa-user" aria-hidden="true"></i>
+            <input
+                type="text"
+                class="yc_login_username"
+                name="username"
+                placeholder="UserName">
+        </div>
+        <div class="yc_login_form">
+            <i class="fa fa-lock" aria-hidden="true"></i>
+            <input
+                type="password"
+                class="yc_login_password"
+                name="identity_id"
+                placeholder="Pwd">
+        </div>
+    </form>
+    <!-- <button value="Login"></button> -->
+    <input type="button" class="yc_login_btn" value="Login" />
+    <div class="yc_login_bottom">
+        <input type="checkbox">
+        <a href="javascript:;">记住我</a>
+        <a href="javascript:;">忘记密码</a>
+    </div>
+</div>
+
+<script>
+$(function () {
+    $(".yc_login_btn").on("click", function () {
+        // 输出以数组形式序列化表单值的结果
+        var datas = $(".login_form").serializeArray();
+        var params = {};
+        // params["username"] = $(".username").value
+        for (var i = 0; i < datas.length; i++) {
+            params[datas[i].name] = datas[i].value
+        }
+        var strParams = JSON.stringify(params);
+        $.ajax({
+            url: "/register",
+            data: strParams,
+            type: "post",
+            contentType: "application/json",
+            success: function (data) {
+                // 接收响应的json
+                /*
+                        Errno string `json:"errno"`
+                        ErrMsg string `json:"errmsg"`
+                        Data interface{} `json:"data"`
+                    */
+                if (data.errno != 0) {
+                    alert(data.errmsg);
+                } else {
+                    // 重定向rediect
+                    window.location.href = "../user/userindex.html";
+                }
+            }
+        })
+
+    });
+});
+</script>

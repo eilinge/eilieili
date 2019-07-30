@@ -1,69 +1,63 @@
 <div class="login-box">
     <div class="yc_login_top">
-        <a href="../shared/login.html">
+        <a href="/login">
             <span>登录</span></a>
-        <a href="../shared/login.html">
+        <a href="/register">
             <span>注册</span></a>
     </div>
-    <form action="" class="login_form">
-        <div class="yc_login_form" >
-            <i class="fa fa-user" aria-hidden="true"></i>
-            <input
-                type="text"
-                class="yc_login_username"
-                name="username"
-                placeholder="UserName">
+    <form action="" class="yc_login_form" auction="/register", method="post">
+        <div>
+            <i class="fa fa-envelope" aria-hidden="true"></i>
+            <input type="text" class="yc_login_email" name="email" placeholder="email">
         </div>
-        <div class="yc_login_form">
+        <div>
+            <i class="fa fa-user" aria-hidden="true"></i>
+            <input type="text" class="yc_login_username" name="username" placeholder="username">
+        </div>
+        <div>
             <i class="fa fa-lock" aria-hidden="true"></i>
             <input
                 type="password"
                 class="yc_login_password"
                 name="identity_id"
-                placeholder="Pwd">
+                placeholder="密码">
         </div>
     </form>
-    <!-- <button value="Login"></button> -->
-    <input type="button" class="yc_login_btn" value="Login" />
+
+    <input type="submit" class="btn btn-default yc_login_btn" value="register" />
     <div class="yc_login_bottom">
         <input type="checkbox">
         <a href="javascript:;">记住我</a>
         <a href="javascript:;">忘记密码</a>
     </div>
+    
 </div>
 
 <script>
 $(function () {
     $(".yc_login_btn").on("click", function () {
+
         // 输出以数组形式序列化表单值的结果
-        var datas = $(".login_form").serializeArray();
+        var datas = $(".yc_login_form").serializeArray();
         var params = {};
-        // params["username"] = $(".username").value
         for (var i = 0; i < datas.length; i++) {
             params[datas[i].name] = datas[i].value
         }
+        console.log("params: ", params)
         var strParams = JSON.stringify(params);
         $.ajax({
             url: "/register",
-            data: strParams,
-            type: "post",
             contentType: "application/json",
+            data: strParams,
+            method: "post",
             success: function (data) {
-                // 接收响应的json
-                /*
-                        Errno string `json:"errno"`
-                        ErrMsg string `json:"errmsg"`
-                        Data interface{} `json:"data"`
-                    */
-                if (data.errno != 0) {
-                    alert(data.errmsg);
+                if (data.errno == 0) {
+                    window.location.href = '/session';
                 } else {
-                    // 重定向rediect
-                    window.location.href = "../user/userindex.html";
+                    alert(data.errmsg);
                 }
             }
         })
-
     });
 });
 </script>
