@@ -9,6 +9,8 @@ import (
 	"fmt"
 
 	"eilieili/bootstrap"
+	"eilieili/conf"
+	"eilieili/eths"
 	"eilieili/web/middleware/identity"
 	"eilieili/web/routes"
 
@@ -31,5 +33,6 @@ func newApp() *bootstrap.Bootstrapper {
 }
 func main() {
 	app := newApp()
+	go eths.EventSubscribe("ws://localhost:8546", conf.Config.Eth.PxaAddr)
 	app.Listen(fmt.Sprintf(":%d", port))
 }

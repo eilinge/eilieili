@@ -52,7 +52,7 @@ $(function () {
             method: "post",
             success: function (data) {
                 if (data.errno == 0) {
-                    window.location.href = '/session';
+                    window.location.href = '/public/userindex.html';
                 } else {
                     alert(data.errmsg);
                 }

@@ -29,7 +29,8 @@ create table `content`
    `content_hash`         varchar(256) NOT NULL DEFAULT '' COMMENT '资产hash',
    `price`                int(100) unsigned NOT NULL DEFAULT '0' COMMENT '价格', 
    `weight`               int(100) unsigned NOT NULL DEFAULT '0' COMMENT '权重',
-   `ts`                   int(20) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间'
+   `ts`                   int(20) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+   INDEX(`content_hash`)
 )ENGINE= InnoDB DEFAULT CHARSET = utf8mb4;
 
 create table `account_content`
@@ -37,7 +38,8 @@ create table `account_content`
    `content_hash`         varchar(256) NOT NULL DEFAULT '' COMMENT '资产hash',
    `token_id`             int unsigned unique NOT NULL DEFAULT '0' COMMENT '资产_id',
    `address`              varchar(256) NOT NULL DEFAULT '' COMMENT 'ether地址',
-   `ts`                   int(20) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间'
+   `ts`                   int(20) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+   INDEX(`content_hash`)
 )ENGINE= InnoDB DEFAULT CHARSET = utf8mb4;
 
 
@@ -49,7 +51,8 @@ create table `auction`
    `percent`              int unsigned NOT NULL DEFAULT '0' COMMENT '权重',
    `price`                int unsigned NOT NULL DEFAULT '0' COMMENT '价格',
    `status`               int unsigned NOT NULL DEFAULT '0' COMMENT '状态',
-   `ts`                   int(20) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间'
+   `ts`                   int(20) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+   INDEX(`content_hash`)
 )ENGINE= InnoDB DEFAULT CHARSET = utf8mb4;
 
 create table `bidwinner` 
@@ -125,6 +128,6 @@ delete from `auction`;
 delete from `account_content`;
 delete from `content`;
 delete from `bidwinner`;
-delete from `lt_userday`；
+delete from `lt_userday`;
 delete from `lt_user`;
 delete from `lt_blackip`;

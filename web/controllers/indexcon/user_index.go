@@ -8,6 +8,8 @@ import (
 	"strconv"
 
 	"eilieili/comm"
+	"eilieili/dbs"
+	"eilieili/eths"
 	"eilieili/models"
 	"eilieili/services"
 	"eilieili/web/utils"
@@ -89,26 +91,26 @@ func (c *IndexController) PostContent() error {
 	// content.AddContent()
 
 	// 6. 操作以太坊
-	// user := comm.GetLoginUser(c.Ctx.Request())
+	user := comm.GetLoginUser(c.Ctx.Request())
 	// username, passwd := c.getSession()
 	// fmt.Println("the user: ", username)
-	// userobj, _ := c.ServiceAccount.GetByUserName(user.Username)
+	userobj, _ := c.ServiceAccount.GetByUserName(user.Username)
 	if err != nil {
 		log.Println("user_index.PostContent GetByUserName err: ", err)
 		resp.Errno = utils.RECODE_USERERR
 		return err
 	}
-	// fromAddr := userobj.Address
-	// passwd := "eilinge"
+	fromAddr := userobj.Address
+	passwd := "eilinge"
 	// from, pass, hash, data string
-	fmt.Printf("price: %d, weight: %d\n", price, weight)
+	// fmt.Printf("price: %d, weight: %d\n", price, weight)
 
 	// 使用go func开启协程, 则当挖矿失败, 无法返回resp.Errno
-	// err = eths.Upload(fromAddr, passwd, content.ContentHash, content.Title, price, weight)
-	// if err != nil {
-	// 	resp.Errno = utils.RECODE_MINTERR
-	// 	return err
-	// }
+	err = eths.Upload(fromAddr, passwd, content.ContentHash, content.Title, price, weight)
+	if err != nil {
+		resp.Errno = utils.RECODE_MINTERR
+		return err
+	}
 	ts := comm.NowUnix()
 	content.Ts = ts
 	err = services.NewContentService().Create(&content)
@@ -121,18 +123,22 @@ func (c *IndexController) PostContent() error {
 }
 
 // GetBalancelist ...
-func (c *IndexController) GetBalancelist() mvc.Result {
-	//1. 响应数据结构初始化
-	var resp utils.Resp
-	resp.Errno = utils.RECODE_OK
-	defer utils.ResponseData(c.Ctx, &resp)
-	//2. 获取所有资产
-
+func (c *IndexController) GetContents() mvc.Result {
+	//1. 获取所有资产
+	sql := fmt.Sprintf("select a.content_hash,weight,a.title,b.token_id from content a, account_content b where a.content_hash = b.content_hash and address='%s'", "0xc8357fd9e82aa6366853d57e36156918eddb2929")
+	fmt.Println(sql)
+	contents, num, err := dbs.DBQuery(sql)
+	if err != nil || num <= 0 {
+		resp.Errno = utils.RECODE_DBERR
+		log.Println("failed to DBQuery err ", err)
+		return nil
+	}
+	fmt.Printf("contents: %#v \n", contents)
 	return mvc.View{
-		Name: "user/userindex.html",
+		Name: "user/balancelist.html",
 		Data: iris.Map{
-			"Title":   "管理后台",
-			"Channel": "",
+			"Title": "管理后台",
+			"Data":  contents,
 		},
 		Layout: "shared/indexlayout.html",
 	}

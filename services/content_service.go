@@ -4,6 +4,7 @@
 package services
 
 import (
+	"database/sql"
 	"sync"
 
 	"eilieili/dao"
@@ -21,6 +22,7 @@ type ContentService interface {
 	Update(data *models.Content, columns []string) error
 	Create(data *models.Content) error
 	GetByContentHash(hash string) *models.Content
+	InnerConTentHash(address string) sql.Result
 }
 
 type contentService struct {
@@ -47,4 +49,8 @@ func (s *contentService) Create(data *models.Content) error {
 
 func (s *contentService) GetByContentHash(hash string) *models.Content {
 	return s.dao.GetByContentHash(hash)
+}
+
+func (s *contentService) InnerConTentHash(address string) sql.Result {
+	return s.dao.InnerConTentHash(address)
 }

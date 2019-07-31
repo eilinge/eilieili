@@ -1,7 +1,10 @@
+[db]
+driver  = "mysql"
+connstr = "root:tester@tcp(127.0.0.1:3306)/copyright?charset=utf8"
 [eth]
 connstr = "http://localhost:8545"
 keydir = "../../../data/keystore"
-fundation = "9aebc666e7f870c88beba4c0762dca8b583c26fc"
-pxaaddr = "0x738e058e45da33239c5956553eaf3a1a5e7e3191"
-pxcaddr = "0x3Cd0a988b37CA4bC61aF919dcbb3f21A5FD030b2"
+fundation = "0x3808c1a53e5598e1806025564bdca4e1c7f6a105"
+pxaaddr = "0x19533457352b8d8c0fdc93c7d0d9a4c3c034af7a"
+pxcaddr = "0x0889f6321a33C98020d424242377d1866A5a0cbb"
 fundationPWD = "eilinge"

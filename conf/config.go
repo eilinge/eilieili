@@ -18,6 +18,13 @@ var (
 // ServerConfig ...
 type ServerConfig struct {
 	Eth *EthConfig
+	Db  *DbConfig
+}
+
+// DbConfig  ...
+type DbConfig struct {
+	Driver  string
+	Connstr string
 }
 
 // EthConfig ...
