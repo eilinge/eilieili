@@ -11,7 +11,16 @@ import (
 
 	"eilieili/configs"
 	"eilieili/models"
+
+	"github.com/kataras/iris/sessions"
 )
+
+// MySessions ...
+var MySessions = sessions.New(sessions.Config{
+	Cookie: configs.CookieName,
+	Encode: configs.SecureCookie.Encode,
+	Decode: configs.SecureCookie.Decode,
+})
 
 // ClientIP get user host
 func ClientIP(request *http.Request) string {
@@ -27,7 +36,7 @@ func Redirect(writer http.ResponseWriter, url string) {
 
 // GetLoginUser ...
 func GetLoginUser(request *http.Request) *models.ObjLoginuser {
-	c, err := request.Cookie("eilieili_loginuser")
+	c, err := request.Cookie(configs.CookieName)
 	if err != nil {
 		return nil
 	}
@@ -64,7 +73,7 @@ func GetLoginUser(request *http.Request) *models.ObjLoginuser {
 func SetLoginuser(writer http.ResponseWriter, loginuser *models.ObjLoginuser) {
 	if loginuser == nil || loginuser.Uid < 1 {
 		c := &http.Cookie{
-			Name:   "eilieili_loginuser",
+			Name:   configs.CookieName,
 			Value:  "",
 			Path:   "/",
 			MaxAge: -1,
@@ -83,7 +92,7 @@ func SetLoginuser(writer http.ResponseWriter, loginuser *models.ObjLoginuser) {
 	params.Add("sign", loginuser.Sign)
 
 	c := &http.Cookie{
-		Name:  "eilieili_loginuser",
+		Name:  configs.CookieName,
 		Value: params.Encode(),
 		Path:  "/",
 	}

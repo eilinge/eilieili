@@ -20,8 +20,8 @@ type AccountService interface {
 	Get(id int) *models.Account
 	Update(data *models.Account, columns []string) error
 	Create(data *models.Account) error
-	GetByEmail(email string) *models.Account
-	GetByUserName(usr string) *models.Account
+	GetByEmail(email string) (*models.Account, error)
+	GetByUserName(usr string) (*models.Account, error)
 }
 
 type accountService struct {
@@ -46,10 +46,10 @@ func (s *accountService) Create(data *models.Account) error {
 	return s.dao.Create(data)
 }
 
-func (s *accountService) GetByEmail(email string) *models.Account {
+func (s *accountService) GetByEmail(email string) (*models.Account, error) {
 	return s.dao.GetByEmail(email)
 }
 
-func (s *accountService) GetByUserName(usr string) *models.Account {
+func (s *accountService) GetByUserName(usr string) (*models.Account, error) {
 	return s.dao.GetByUserName(usr)
 }

@@ -38,22 +38,22 @@ func (d *AccountDao) Create(data *models.Account) error {
 	return err
 }
 
-func (d *AccountDao) GetByEmail(email string) *models.Account {
+func (d *AccountDao) GetByEmail(email string) (*models.Account, error) {
 	data := &models.Account{Email: email}
 	ok, err := d.engine.Get(data)
 	if ok && err == nil {
-		return data
+		return data, nil
 	}
 	data.Email = ""
-	return data
+	return data, err
 }
 
-func (d *AccountDao) GetByUserName(usr string) *models.Account {
+func (d *AccountDao) GetByUserName(usr string) (*models.Account, error) {
 	data := &models.Account{Username: usr}
 	ok, err := d.engine.Get(data)
 	if ok && err == nil {
-		return data
+		return data, nil
 	}
 	data.Username = ""
-	return data
+	return data, err
 }

@@ -40,7 +40,7 @@ func New(appName, appOwner string, cfgs ...Configurator) *Bootstrapper {
 // SetupViews reloads the templates.
 func (b *Bootstrapper) SetupViews(viewsDir string) {
 	// 全局模板视图
-	htmlEngine := iris.HTML(viewsDir, ".html").Layout("shared/layout.html")
+	htmlEngine := iris.HTML(viewsDir, ".html").Layout("shared/layout.html").Layout("shared/indexlayout.html")
 	// 每次重新加载模版（线上关闭它）
 	htmlEngine.Reload(false)
 	// 给模版内置各种定制的方法

@@ -1,0 +1,45 @@
+<div class="container">
+    <div class="artilce_content">
+        <form action="/content" method="post" enctype="multipart/form-data">
+        <!-- <form action="" class="artilce_content"> -->
+            <div class="form-box">
+                <span>Price:</span><input type="text" name="price"><br>
+            </div>
+            <div class="form-box">
+                <span>Weight:</span> <input type="text" name="weight"><br>
+            </div>
+            <div class="form-box">
+                <span>Files:</span> <input type="file" name="fileName" class="fileUpload">
+                <!-- <span>Files:</span> <input type="file" class="fileUpload" name="fileName"> -->
+            </div>
+            <!-- <input type="submit" class="submit" value="Submit"> -->
+        </form>
+        <!-- <div class="article_content_right">
+            <a href="javascript:;">认证图片</a>
+        </div> -->
+    </div>
+</div>
+<link rel="stylesheet" href="public/css/image.css">
+<script src="/public/assets/jquery/jquery.js"></script>
+<script src="/public/assets/bootstrap/dist/js/bootstrap.js"></script>
+<script src="/public/assets/jquery-fileupload/jquery.ui.widget.js"></script>
+<script src="/public/assets/jquery-fileupload/jquery.fileupload.js"></script>
+<script>
+    $(function () {
+    $(".fileUpload").fileupload({
+    // $(".submit").on("click", function(){
+        // autoLoad: true,
+        // }
+        done: function (e, data) {
+            console.log(data._response.result);
+            if (data._response.result.errno == 0) {
+                window.location.href = "./balancelist.html";
+                // window.location.href = "#";
+            } else {
+                alert(data._response.result.errmsg);
+            }
+        }
+        });
+    });
+</script>
+

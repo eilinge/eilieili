@@ -44,22 +44,24 @@ $(function () {
         }
         var strParams = JSON.stringify(params);
         $.ajax({
-            url: "/register",
+            url: "/login",
             data: strParams,
             type: "post",
             contentType: "application/json",
             success: function (data) {
                 // 接收响应的json
                 /*
-                        Errno string `json:"errno"`
-                        ErrMsg string `json:"errmsg"`
-                        Data interface{} `json:"data"`
-                    */
+                    Errno string `json:"errno"`
+                    ErrMsg string `json:"errmsg"`
+                    Data interface{} `json:"data"`
+                */
+                
                 if (data.errno != 0) {
+                    console.log("data.errno", data.errno)
                     alert(data.errmsg);
                 } else {
                     // 重定向rediect
-                    window.location.href = "../user/userindex.html";
+                    window.location.href = "/public/userindex.html";
                 }
             }
         })

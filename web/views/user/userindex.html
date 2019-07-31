@@ -1,0 +1,72 @@
+
+<div class="container">
+    <div class="img_list">
+        <ul>
+            <li>
+                <a href="javascript:;">
+                    <p>认证文章</p>
+                </a>
+            </li>
+            <li>
+                <a href="/image">
+                    <p>认证图片</p>
+                </a>
+            </li>
+            <li>
+                <a href="./balancelist">
+                    <p>我的原创</p>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="notice_list">
+        <h3>系统公告</h3>
+        <div class="line"></div>
+        <ul>
+            <li>
+                <p>[产品更新]UI全新改版，重大功能齐上线
+                </p>
+            </li>
+            <li>
+                <p>[产品更新]UI全新改版，重大功能齐上线</p>
+            </li>
+            <li>
+                <p>[产品更新]UI全新改版，重大功能齐上线</p>
+            </li>
+            <li>
+                <p>[产品更新]UI全新改版，重大功能齐上线</p>
+            </li>
+            <li>
+                <p>[产品更新]UI全新改版，重大功能齐上线</p>
+            </li>
+            <li>
+                <p>[产品更新]UI全新改版，重大功能齐上线</p>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var pdj = {
+            // 网页加载时, 开始初始化
+            init: function () {
+                this.checkUser();
+            },
+            checkUser: function () {
+                $.ajax({
+                    url: "/session",
+                    type: "get",
+                    success: function (data) {
+                        console.log(data);
+                        if (data.errno != 0) {
+                            window.location.href = "../";
+                        }
+                    }
+                })
+            }
+
+        };
+        pdj.init();
+    });
+</script>
