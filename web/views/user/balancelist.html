@@ -1,4 +1,22 @@
 
+<div>
+    {{range $i, $data := .Data}}
+    <b>所剩份额:</b><span>{{ .ContentHash }}</span>
+    <li>
+        <div>
+            <img src="{{ .Title }}" alt="">
+            <div>
+                <b>所剩份额:</b><span>{{ .Weight }}</span>
+                <input type="text" placeholder="份数">
+                <input type="text" placeholder="价格">
+                <a class="account_event" href="javacript:;" data-tokenid="{{.TokenID}}"
+                    data-account="{{.ContentHash}}">拍卖</a>
+            </div>
+        </div>
+    </li>
+    {{end}}
+</div>
+<br style="clear: both;" />
 
 <script src="/public/assets/jquery/jquery.js"></script>
 <script src="/public/assets/bootstrap/dist/js/bootstrap.js"></script>

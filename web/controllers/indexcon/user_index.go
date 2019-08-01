@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"eilieili/comm"
-	"eilieili/dbs"
+	"eilieili/datasource"
 	"eilieili/eths"
 	"eilieili/models"
 	"eilieili/services"
@@ -125,15 +125,13 @@ func (c *IndexController) PostContent() error {
 // GetBalancelist ...
 func (c *IndexController) GetContents() mvc.Result {
 	//1. 获取所有资产
-	sql := fmt.Sprintf("select a.content_hash,weight,a.title,b.token_id from content a, account_content b where a.content_hash = b.content_hash and address='%s'", "0xc8357fd9e82aa6366853d57e36156918eddb2929")
-	fmt.Println(sql)
-	contents, num, err := dbs.DBQuery(sql)
-	if err != nil || num <= 0 {
-		log.Println("failed to DBQuery err ", err)
+	dao := utils.NewContentinfoService(datasource.InstanceDbMaster())
+	contents, num, err := dao.InnerContent("0xc8357fd9e82aa6366853d57e36156918eddb2929")
+	if err != err || num <= 0 {
+		log.Println("failed to GetContents err ", err)
 		return nil
 	}
-
-	fmt.Printf("contents: %#v \n", contents)
+	fmt.Printf("contents: %v \n", contents)
 	return mvc.View{
 		Name: "user/balancelist.html",
 		Data: iris.Map{
