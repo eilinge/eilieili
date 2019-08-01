@@ -122,6 +122,25 @@ CREATE TABLE `lt_user`
    PRIMARY KEY(`id`)
 )ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4;
 
+
+drop table if exists `group`;
+drop table if exists `user`;
+
+create table `group` 
+(
+	id int(10) unsigned not null primary key auto_increment,
+    name varchar(256)
+);
+
+create table `user`
+(
+	id int(10) unsigned not null primary key auto_increment,
+    name varchar(256),
+    groupid int(10),
+    Index(groupid)
+);
+
+
 delete from `account`;
 delete from `vote`;
 delete from `auction`;

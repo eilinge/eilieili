@@ -129,10 +129,10 @@ func (c *IndexController) GetContents() mvc.Result {
 	fmt.Println(sql)
 	contents, num, err := dbs.DBQuery(sql)
 	if err != nil || num <= 0 {
-		resp.Errno = utils.RECODE_DBERR
 		log.Println("failed to DBQuery err ", err)
 		return nil
 	}
+
 	fmt.Printf("contents: %#v \n", contents)
 	return mvc.View{
 		Name: "user/balancelist.html",
