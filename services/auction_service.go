@@ -22,6 +22,7 @@ type AuctionService interface {
 	Update(data *models.Auction, columns []string) error
 	Delete(id int) error
 	Create(data *models.Auction) error
+	GetByStatus(id, status int) *models.Auction
 	GetByContentHash(hash string) *models.Auction
 }
 
@@ -54,7 +55,9 @@ func (s *auctionService) Delete(id int) error {
 func (s *auctionService) Create(data *models.Auction) error {
 	return s.dao.Create(data)
 }
-
+func (s *auctionService) GetByStatus(id, status int) *models.Auction {
+	return s.dao.GetByStatus(id, status)
+}
 func (s *auctionService) GetByContentHash(hash string) *models.Auction {
 	return s.dao.GetByContentHash(hash)
 }

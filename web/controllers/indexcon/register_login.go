@@ -110,8 +110,8 @@ func (c *IndexController) PostRegister() {
 
 	comm.SetLoginuser(c.Ctx.ResponseWriter(), &loginuser)
 	c.setSession(account.UserName, account.IdentitiyID)
-	username, passwd := c.getSession()
-	fmt.Println("the user: ", username, passwd)
+	// username, passwd := c.getSession()
+	// fmt.Println("the user: ", username, passwd)
 	comm.Redirect(c.Ctx.ResponseWriter(), "/login")
 }
 
@@ -147,8 +147,8 @@ func (c *IndexController) PostLogin() {
 		Now:      comm.NowUnix(),
 		Ip:       comm.ClientIP(c.Ctx.Request()),
 	}
-	username, passwd := c.getSession()
-	fmt.Println("the user: ", username, passwd)
+	// username, passwd := c.getSession()
+	// fmt.Println("the user: ", username, passwd)
 	comm.SetLoginuser(c.Ctx.ResponseWriter(), &loginuser)
 }
 

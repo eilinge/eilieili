@@ -57,6 +57,15 @@ func (d *AuctionDao) Create(data *models.Auction) error {
 	return err
 }
 
+func (d *AuctionDao) GetByStatus(id, status int) *models.Auction {
+	data := &models.Auction{TokenId: id, Status: status}
+	_, err := d.engine.Get(data)
+	if err != nil {
+		return nil
+	}
+	return data
+}
+
 func (d *AuctionDao) GetByContentHash(hash string) *models.Auction {
 	data := &models.Auction{ContentHash: hash}
 	ok, err := d.engine.Get(data)

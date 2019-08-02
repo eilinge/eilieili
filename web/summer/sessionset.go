@@ -1,4 +1,4 @@
-package indexcon
+package summer
 
 import (
 	"github.com/gorilla/securecookie"

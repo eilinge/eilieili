@@ -17,6 +17,7 @@ type AdminController struct {
 	Ctx                   iris.Context // 解析前端传来的数据
 	ServiceAccount        services.AccountService
 	ServiceAccountContent services.AccountContentService
+	ServiceAuction        services.AuctionService
 	ServiceBidwinner      services.BidwinnerService
 	ServiceVote           services.VoteService
 

@@ -20,6 +20,7 @@ type IndexController struct {
 	Ctx                   iris.Context
 	ServiceAccount        services.AccountService
 	ServiceAccountContent services.AccountContentService
+	ServiceAuction        services.AuctionService
 	ServiceBidwinner      services.BidwinnerService
 	ServiceVote           services.VoteService
 

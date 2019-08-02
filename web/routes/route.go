@@ -16,6 +16,7 @@ func Configure(b *bootstrap.Bootstrapper) {
 	accountContentvice := services.NewAccountContentService()
 	auctionService := services.NewAuctionService()
 	voteService := services.NewVoteService()
+	bidwinnerService := services.NewBidwinnerService()
 
 	userService := services.NewUserService()
 	userdayService := services.NewUserdayService()
@@ -29,6 +30,7 @@ func Configure(b *bootstrap.Bootstrapper) {
 		accountContentvice,
 		auctionService,
 		voteService,
+		bidwinnerService,
 		userService,
 		userdayService,
 		blackipService)
@@ -43,6 +45,7 @@ func Configure(b *bootstrap.Bootstrapper) {
 		accountContentvice,
 		auctionService,
 		voteService,
+		bidwinnerService,
 		userService,
 		userdayService,
 		blackipService)

@@ -1,142 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>个人中心页面</title>
-        <link rel="stylesheet" href="../assets/bootstrap/dist/css/bootstrap.css">
-        <link rel="stylesheet" href="../css/balancelist.css">
-    </head>
-    <body>
-        <div class="layout">
-            <div class="header">
-              <nav class="navbar navbar-default">
-                  <div class="container-fluid">
-                      <!-- Brand and toggle get grouped for better mobile display -->
-                      <div class="navbar-header">
-                          <button
-                              type="button"
-                              class="navbar-toggle collapsed"
-                              data-toggle="collapse"
-                              data-target="#bs-example-navbar-collapse-1"
-                              aria-expanded="false">
-                              <span class="sr-only">Toggle navigation</span>
-                              <span class="icon-bar"></span>
-                              <span class="icon-bar"></span>
-                              <span class="icon-bar"></span>
-                          </button>
-                          <a class="navbar-brand" href="#">copyright</a>
-                      </div>
-                      <!-- Collect the nav links, forms, and other content for toggling -->
-                      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                          <ul class="nav navbar-nav">
-                              <li>
-                                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">认证原创</a>
-                                  <ul class="dropdown-menu">
-                                      <li>
-                                          <a href="./articleauthor.html">认证文章</a>
-                                      </li>
-                                      <li>
-                                          <a href="./imageAuthor.html">认证图片</a>
-                                      </li>
-                                  </ul>
-                              </li>
-                              <li>
-                                  <a href="./balancelist.html">我的资产</a>
-                              </li>
-                              <li class="active">
-                                  <a href="./auctionlist.html">拍卖中心</a>
-                              </li>
-                              <li>
-                                  <a href="./vote.html">投票区</a>
-                              </li>
-                          </ul>
-                          <ul class="nav navbar-nav navbar-right">
-                              <li>
-                                  <a href="#">Me</a>
-                              </li>
-                          </ul>
-                      </div>
-                  </div>
-              </nav>
-            </div>
-            <div class="container">
-                <ul class="containerlist"></ul>
-            </div>
-        </div>
-        <script src="../assets/jquery/jquery.js"></script>
-        <script src="../assets/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="../assets/template-native/template-native.js"></script>
-        <script type="text/template" id="templateId">
-            <% for(var i=0;i<data.data.length;i++){ %>
-            <li>
+
+<div class="container">
+    <ul class="containerlist">
+        <% for(var i=0;i<data.data.length;i++){ %>
+        <li>
+            <div>
+                <!-- 获取response data, 添加分页 -->
+                <img data-tokenid="<%= data.data[i].token_id %>" src="/content/<%=data.data[i].title%>"
+                    data-pixhash="<%= data.data[i].content_hash %>">
                 <div>
-                    <!-- 获取response data, 添加分页 -->
-                    <img data-tokenid="<%= data.data[i].token_id %>" src="/content/<%=data.data[i].title%>"
-                        data-pixhash="<%= data.data[i].content_hash %>">
-                    <div>
-                        <span><%= data.data[i].title %></span>
-                        <b>份额</b><span><%= data.data[i].percent %></span>
-                        <input type="text" placeholder="<%= data.data[i].price %>"><a href="javascript:;" class='bid_btn'
-                            data-tokenid="<%= data.data[i].token_id %>">竞拍</a>
-                    </div>
+                    <span><%= data.data[i].title %></span>
+                    <b>份额</b><span><%= data.data[i].percent %></span>
+                    <input type="text" placeholder="<%= data.data[i].price %>"><a href="javascript:;"
+                        class='bid_btn' data-tokenid="<%= data.data[i].token_id %>">竞拍</a>
                 </div>
-            </li>
-            <% } %>
-        </script>
-        <script>
-            $(function () {
-                var pdj = {
-                    // 网页加载时, 开始初始化
-                    init: function () {
-                        this.checkUser();
-                    },
-                    checkUser: function () {
-                        var _this = this;
-                        $.ajax({
-                            url: "/session",
-                            type: "get",
-                            success: function (data) {
-                                if (data.errno != 0) {
-                                    window.location.href = "../";
-                                } else {
-                                    _this.queryBalance();
-                                }
-                            }
-                        });
-                    },
-                    queryBalance: function () {
-                        $.ajax({
-                            url: "/auctions",
-                            type: "get",
-                            success: function (data) {
-                                console.log(data)
-                                var html = template("templateId", data);
-                                $(".containerlist").html(html);
-                                }
-                            })
+            </div>
+        </li>
+        <% } %>
+    
+    </ul>
+</div>
+
+<link rel="stylesheet" href="/public/css/balancelist.css">
+<script src="/public/assets/jquery/jquery.js"></script>
+<script src="/public/assets/bootstrap/dist/js/bootstrap.js"></script>
+<script src="/public/assets/template-native/template-native.js"></script>
+<script>
+    $(function () {
+        var pdj = {
+            // 网页加载时, 开始初始化
+            init: function () {
+                // this.checkUser();
+            },
+            checkUser: function () {
+                var _this = this;
+                $.ajax({
+                    url: "/session",
+                    type: "get",
+                    success: function (data) {
+                        if (data.errno != 0) {
+                            window.location.href = "../";
+                        } else {
+                            _this.queryBalance();
                         }
-                    };
-                    pdj.init();
-                $(".containerlist").on("click", ".bid_btn", function () {
-                    var tokenID = this.dataset['tokenid'];
-                    var price = $(this).prev().val();
-                    $.ajax({
-                        url: "/auction/bid",
-                        type: "get",
-                        data: {
-                            tokenid: tokenID,
-                            price: price
-                        },
-                        success: function (data) {
-                            if (data.errno == 0) {
-                                alert("竞拍成功");
-                            } else {
-                                alert(data.errmsg)
-                            }
+                    }
+                });
+            },
+            queryBalance: function () {
+                $.ajax({
+                    url: "/auctions",
+                    type: "get",
+                    success: function (data) {
+                        console.log(data)
+                        var html = template("templateId", data);
+                        $(".containerlist").html(html);
                         }
                     })
-                });
-            });
-        </script>
-    </body>
-</html>
+                }
+            };
+            pdj.init();
+        $(".containerlist").on("click", ".bid_btn", function () {
+            var tokenID = this.dataset['tokenid'];
+            var price = $(this).prev().val();
+            $.ajax({
+                url: "/auction/bid",
+                type: "get",
+                data: {
+                    tokenid: tokenID,
+                    price: price
+                },
+                success: function (data) {
+                    if (data.errno == 0) {
+                        alert("竞拍成功");
+                    } else {
+                        alert(data.errmsg)
+                    }
+                }
+            })
+        });
+    });
+</script>

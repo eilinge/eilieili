@@ -1,10 +1,9 @@
 
-<div>
-    {{range $i, $data := .Data}}
-    <b>所剩份额:</b><span>{{ .ContentHash }}</span>
+<div class="containerlist">
+    {{range $data := .Data}}
     <li>
         <div>
-            <img src="{{ .Title }}" alt="">
+            <img src="{{ $data.Title }}" alt="">
             <div>
                 <b>所剩份额:</b><span>{{ .Weight }}</span>
                 <input type="text" placeholder="份数">
@@ -21,12 +20,13 @@
 <script src="/public/assets/jquery/jquery.js"></script>
 <script src="/public/assets/bootstrap/dist/js/bootstrap.js"></script>
 <script src="/public/assets/template-native/template-native.js"></script>
+<link rel="stylesheet" href="/public/css/balancelist.css">
 
 <script>
 $(function () {
     var pdj = {
         init: function () {
-            this.checkUser();
+            // this.checkUser();
             this.initAuction();
         },
         checkUser: function () {
@@ -36,9 +36,9 @@ $(function () {
                 type: "get",
                 success: function (data) {
                     if (data.errno != 0) {
-                        window.location.href = "../";
+                        window.location.href = "/contents";
                     } else {
-                        _this.queryBalance();
+                        window.location.href = "/contents";
                     }
                 }
             });

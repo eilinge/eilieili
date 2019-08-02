@@ -1,3 +1,12 @@
+package summer
+
+import (
+	"eilieili/datasource"
+	"fmt"
+	"log"
+
+	"github.com/go-xorm/xorm"
+)
 
 type Group struct {
 	Id   int64
@@ -36,15 +45,15 @@ func NewContentinfoService(engine *xorm.Engine) *ContentinfoDao {
 
 func (c *ContentinfoDao) InnerContent() {
 	var users []UserGroup
-	// err := c.engine.Cols("user.name", "`group.name`").Join("INNER", "`group`", "`group`.id = user.groupid").Find(&users)
-	// err := c.engine.Join("INNER", "`group`", "`group`.id = user.groupid").Find(&users)
-	// if err != nil {
-	// 	log.Println("failed to join ....", err)
-	// 	return
-	// }
-	// for _, v := range users {
-	// 	fmt.Printf("the users: %s in group %#v \n", v.User.Name, v)
-	// }
+	err := c.engine.Cols("user.name", "`group.name`").Join("INNER", "`group`", "`group`.id = user.groupid").Find(&users)
+	err := c.engine.Join("INNER", "`group`", "`group`.id = user.groupid").Find(&users)
+	if err != nil {
+		log.Println("failed to join ....", err)
+		return
+	}
+	for _, v := range users {
+		fmt.Printf("the users: %s in group %#v \n", v.User.Name, v)
+	}
 
 }
 func main() {

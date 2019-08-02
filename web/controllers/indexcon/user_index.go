@@ -24,7 +24,7 @@ func (c *IndexController) GetIndex() mvc.Result {
 		Name: "user/userindex.html",
 		Data: iris.Map{
 			"Title":   "管理后台",
-			"Channel": "",
+			"Channel": "index",
 		},
 		Layout: "shared/indexlayout.html",
 	}
@@ -36,7 +36,7 @@ func (c *IndexController) GetImage() mvc.Result {
 		Name: "user/imageAuthor.html",
 		Data: iris.Map{
 			"Title":   "管理后台",
-			"Channel": "",
+			"Channel": "index",
 		},
 		Layout: "shared/indexlayout.html",
 	}
@@ -101,6 +101,7 @@ func (c *IndexController) PostContent() error {
 		return err
 	}
 	fromAddr := userobj.Address
+	log.Println("fromAddr: ", fromAddr)
 	passwd := "eilinge"
 	// from, pass, hash, data string
 	// fmt.Printf("price: %d, weight: %d\n", price, weight)
@@ -122,11 +123,11 @@ func (c *IndexController) PostContent() error {
 	return nil
 }
 
-// GetBalancelist ...
+// GetContents ...
 func (c *IndexController) GetContents() mvc.Result {
 	//1. 获取所有资产
 	dao := utils.NewContentinfoService(datasource.InstanceDbMaster())
-	contents, num, err := dao.InnerContent("0xc8357fd9e82aa6366853d57e36156918eddb2929")
+	contents, num, err := dao.InnerContent("0x127abc67e63ceb4dfeb3e066b9ee4297c12a8100")
 	if err != err || num <= 0 {
 		log.Println("failed to GetContents err ", err)
 		return nil
@@ -135,8 +136,9 @@ func (c *IndexController) GetContents() mvc.Result {
 	return mvc.View{
 		Name: "user/balancelist.html",
 		Data: iris.Map{
-			"Title": "管理后台",
-			"Data":  contents,
+			"Title":   "管理后台",
+			"Channel": "balance",
+			"Data":    contents,
 		},
 		Layout: "shared/indexlayout.html",
 	}
