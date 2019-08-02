@@ -287,7 +287,6 @@ func VoteTo(from, pass string, tokenID int64) error {
 	// StorageVoteCount()
 	return nil
 }
-
 /*
 // StorageVoteCount ...
 func StorageVoteCount() error {
@@ -336,7 +335,7 @@ func (s Assets) ViewVoteCount() (newS Assets) {
 	fmt.Println(newS)
 	return
 }
-
+*/
 // GetPxcBalance ...
 func GetPxcBalance(from string) (int64, error) {
 	cli, err := ethclient.Dial(conf.Config.Eth.Connstr)
@@ -352,7 +351,7 @@ func GetPxcBalance(from string) (int64, error) {
 	balance, _ := instance.GetPXCBalance(nil, common.HexToAddress(from))
 	return balance.Int64(), nil
 }
-
+/*
 // Award ...
 func (s *Assets) Award(timeout <-chan time.Time) {
 	go func() {

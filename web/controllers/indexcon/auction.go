@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"strconv"
 
 	"eilieili/comm"
+	"eilieili/eths"
 	"eilieili/datasource"
-	"eilieili/dbs"
 	"eilieili/models"
 	"eilieili/web/utils"
 	"eilieili/web/viewmodels"
@@ -123,7 +124,9 @@ func (c *IndexController) EndBid(tokenID, weight int, resp utils.Resp) error {
 	}
 	// 4.1 更新content数据库: percent(总的-参与拍卖的)/price()
 	dao := utils.NewContentinfoService(datasource.InstanceDbMaster())
-	auctions, num, err := dao.InnerAuction(tokenID)
+	s := make(map[string]int)
+	s["token_id"] = tokenID
+	auctions, num, err := dao.InnerAuction(s)
 	if err != err || num <= 0 {
 		log.Println("failed to GetContents err ", err)
 		return nil
@@ -174,36 +177,91 @@ func (c *IndexController) EndBid(tokenID, weight int, resp utils.Resp) error {
 }
 
 // GetAuctions ...
-func (c *IndexController) GetAuctions() error {
-	// 3. 查看拍卖
+func (c *IndexController) GetAuctions() mvc.Result {
+	// 1. 查看拍卖
 	// 自动识别出查询字段所在tables
 	// sql := fmt.Sprintf("select a.*,b.title from auction a, content b where a.content_hash=b.content_hash and a.status=1;")
-	sql := fmt.Sprintf("select a.content_hash,title,b.price,b.percent,token_id from content a, auction b where a.content_hash=b.content_hash and b.status=1")
-	fmt.Println(sql)
-	values, num, err := dbs.DBQuery(sql)
-	if err != nil || num <= 0 {
-		return err
-	}
-	mapResp := make(map[string]interface{})
-	fmt.Printf("the values: %#v\n", values)
-	mapResp["data"] = values
-
-	return nil
-	//1. 获取所有资产
 	dao := utils.NewContentinfoService(datasource.InstanceDbMaster())
-	contents, num, err := dao.InnerContent("0x127abc67e63ceb4dfeb3e066b9ee4297c12a8100")
+	s := make(map[string]int)
+	s["status"] = 1
+	log.Println("get auction start ...")
+	auctions, num, err := dao.InnerAuction(s)
 	if err != err || num <= 0 {
 		log.Println("failed to GetContents err ", err)
 		return nil
 	}
-	fmt.Printf("contents: %v \n", contents)
+	fmt.Printf("contents: %v \n", auctions)
 	return mvc.View{
-		Name: "user/balancelist.html",
+		Name: "user/auctionlist.html",
 		Data: iris.Map{
 			"Title":   "管理后台",
 			"Channel": "balance",
-			"Data":    contents,
+			"Data":    auctions,
 		},
 		Layout: "shared/indexlayout.html",
 	}
+}
+
+// GetBid ...
+func (c *IndexController) GetBid() error {
+	// 1. 响应数据结构初始化
+	var resp utils.Resp
+	resp.Errno = utils.RECODE_OK
+	defer utils.ResponseData(c.Ctx, &resp)
+
+	// 2. 获取参数
+	// price,tokenid
+	price := c.Ctx.URLParam("price")
+	tokenID := c.Ctx.URLParam("tokenid")
+
+	var err error
+	if endBid {
+		fmt.Printf("this bid is  end: %s\n", tokenID)
+		resp.Errno = utils.RECODE_DBERR
+		return err
+	}
+
+	// 进行比较竞拍值, 保存该address
+	_price, _ := strconv.ParseInt(price, 10, 32)
+	_tokenid, _ := strconv.ParseInt(tokenID, 10, 32)
+
+	// 3.5 获取该address响应erc20 余额, 保证其有足够(>=30)的token进行该次投票
+	erc20Balance, _ := eths.GetPxcBalance(address)
+	if erc20Balance < _price || err != nil {
+		fmt.Printf("%s: your erc20 balance is poor, connot operate this vote\n", address)
+		resp.Errno = utils.RECODE_ERC20POORERR
+		return err
+	}
+
+	// 从bidwinner中取出当前最大的price, 然后进行比较
+	maxSQL := fmt.Sprintf("select price from bidwinner where token_id='%d'", _tokenid)
+	// fmt.Println(maxSQL)
+	value := c.ServiceBidwinner.GetByTokenId(_tokenid)
+	Price := value.Price
+
+	// 同步锁, 防止多人同时修改数据
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	// fmt.Printf("the price: %d and Price: %d\n", _price, Price)
+	if _price > Price {
+		Price = _price
+		theWinner := models.Bidwinner{
+			TokenId: _tokenid,
+			Price: _price,
+			Address: address,
+			Ts: comm.NowUnix(),
+		}
+		err = c.ServiceBidwinner.Update(&theWinner, []string{"price","address"})
+		if err != nil {
+			resp.Errno = utils.RECODE_DBERR
+			return err
+		}
+		fmt.Printf("the account: %s Join bid success ...", address)
+	} else {
+		resp.Errno = utils.RECODE_DATAERR
+		return err
+	}
+
+	return nil
 }

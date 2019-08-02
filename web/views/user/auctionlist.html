@@ -1,21 +1,21 @@
 
 <div class="container">
     <ul class="containerlist">
-        <% for(var i=0;i<data.data.length;i++){ %>
+        {{ range $i, $data := .Data}}
         <li>
             <div>
                 <!-- 获取response data, 添加分页 -->
-                <img data-tokenid="<%= data.data[i].token_id %>" src="/content/<%=data.data[i].title%>"
-                    data-pixhash="<%= data.data[i].content_hash %>">
+                <img data-tokenid="{{ .TokenID }}" src="{{.Content}}"
+                    data-pixhash="{{ .ContentHash }}">
                 <div>
-                    <span><%= data.data[i].title %></span>
-                    <b>份额</b><span><%= data.data[i].percent %></span>
-                    <input type="text" placeholder="<%= data.data[i].price %>"><a href="javascript:;"
-                        class='bid_btn' data-tokenid="<%= data.data[i].token_id %>">竞拍</a>
+                    <span>{{ .Title }}</span>
+                    <b>份额</b><span>{{ .Percent }}</span>
+                    <input type="text" placeholder="{{ .Price }}"><a href="javascript:;"
+                        class='bid_btn' data-tokenid="{{ .TokenID }}">竞拍</a>
                 </div>
             </div>
         </li>
-        <% } %>
+        {{ end }}
     
     </ul>
 </div>
@@ -62,7 +62,7 @@
             var tokenID = this.dataset['tokenid'];
             var price = $(this).prev().val();
             $.ajax({
-                url: "/auction/bid",
+                url: "/bid",
                 type: "get",
                 data: {
                     tokenid: tokenID,

@@ -127,7 +127,7 @@ func (c *IndexController) PostContent() error {
 func (c *IndexController) GetContents() mvc.Result {
 	//1. 获取所有资产
 	dao := utils.NewContentinfoService(datasource.InstanceDbMaster())
-	contents, num, err := dao.InnerContent("0x127abc67e63ceb4dfeb3e066b9ee4297c12a8100")
+	contents, num, err := dao.InnerContent("0xc8357fd9e82aa6366853d57e36156918eddb2929")
 	if err != err || num <= 0 {
 		log.Println("failed to GetContents err ", err)
 		return nil

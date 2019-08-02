@@ -21,10 +21,13 @@ type ResContentInfo struct {
 }
 
 type ResAuctionInfo struct {
+	TokenID     int
+	Title       string
 	Percent     int
 	Weight      int
 	Price       int
 	ContentHash string
+	Content     string
 }
 
 func (ContentInfo) TableName() string {
@@ -66,19 +69,25 @@ func (c *ContentinfoDao) InnerContent(address string) (*map[int]ResContentInfo, 
 }
 
 // InnerAuction "select a.percent,b.weight,b.price,a.content_hash from auction a, content b where a.content_hash = b.content_hash and token_id ='%d'"
-func (c *ContentinfoDao) InnerAuction(id int) (*map[int]ResAuctionInfo, int, error) {
+func (c *ContentinfoDao) InnerAuction(s map[string]int) (*map[int]ResAuctionInfo, int, error) {
 	var contentinfo []ContentInfo
-	err := c.engine.Join("INNER", "auction", "auction.content_hash = content.content_hash").
-		Where("token_id=?", id).Find(&contentinfo)
+	var err error
+	for i, v := range s {
+		err = c.engine.Join("INNER", "auction", "auction.content_hash = content.content_hash").
+			Where(i+"=?", v).Find(&contentinfo)
+	}
 	if err != nil {
 		log.Println("failed to join ....", err)
 		return nil, 0, err
 	}
-	log.Println("contentinfo: ", contentinfo)
+	// log.Println("contentinfo: ", contentinfo)
 	res := make(map[int]ResAuctionInfo)
 	for i, info := range contentinfo {
 		res[i] = ResAuctionInfo{
+			TokenID:     info.Auction.TokenId,
+			Title:       info.Content.Title,
 			ContentHash: info.Content.ContentHash,
+			Content:     info.Content.Content,
 			Weight:      info.Content.Weight,
 			Percent:     info.Percent,
 			Price:       info.Content.Price,

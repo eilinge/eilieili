@@ -29,7 +29,7 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
-                            <li {{if eq .Channel "index"}}class="active" {{end}}>
+                            <li>
                                 <a href="/index" class="dropdown-toggle" data-toggle="dropdown" role="button">认证原创</a>
                                 <ul class="dropdown-menu">
                                     <li>
@@ -40,13 +40,13 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li {{if eq .Channel "balance"}}class="active" {{end}}>
+                            <li>
                                 <a href="/contents">我的资产</a>
                             </li>
-                            <li {{if eq .Channel "auction"}}class="active" {{end}}>
+                            <li >
                                 <a href="/auction">拍卖中心</a>
                             </li>
-                            <li {{if eq .Channel "vote"}}class="active" {{end}}>
+                            <li >
                                 <a href="/vote">投票区</a>
                             </li>
                         </ul>
