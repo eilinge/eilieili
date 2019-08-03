@@ -1,162 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>个人中心页面</title>
-        <link rel="stylesheet" href="../assets/bootstrap/dist/css/bootstrap.css">
-        <link rel="stylesheet" href="../css/vote.css">
-    </head>
-    <body>
-        <div class="layout">
-            <div class="header">
-              <nav class="navbar navbar-default">
-                  <div class="container-fluid">
-                      <!-- Brand and toggle get grouped for better mobile display -->
-                      <div class="navbar-header">
-                          <button
-                              type="button"
-                              class="navbar-toggle collapsed"
-                              data-toggle="collapse"
-                              data-target="#bs-example-navbar-collapse-1"
-                              aria-expanded="false">
-                              <span class="sr-only">Toggle navigation</span>
-                              <span class="icon-bar"></span>
-                              <span class="icon-bar"></span>
-                              <span class="icon-bar"></span>
-                          </button>
-                          <a class="navbar-brand" href="#">copyright</a>
-                      </div>
-                      <!-- Collect the nav links, forms, and other content for toggling -->
-                      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                          <ul class="nav navbar-nav">
-                              <li>
-                                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">认证原创</a>
-                                  <ul class="dropdown-menu">
-                                      <li>
-                                          <a href="./articleauthor.html">认证文章</a>
-                                      </li>
-                                      <li>
-                                          <a href="./imageAuthor.html">认证图片</a>
-                                      </li>
-                                  </ul>
-                              </li>
-                              <li>
-                                  <a href="./balancelist.html">我的资产</a>
-                              </li>
-                              <li>
-                                  <a href="./auctionlist.html">拍卖中心</a>
-                              </li>
-                              <li class="active">
-                                  <a href="./vote.html">投票区</a>
-                              </li>
-                          </ul>
-                          <ul class="nav navbar-nav navbar-right">
-                              <li>
-                                  <a href="#">Me</a>
-                              </li>
-                          </ul>
-                      </div>
-                  </div>
-              </nav>
-            </div>
-            <div class="container">
-              <ul class="containerlist"></ul>
-            </div>
-
-        </div>
-        <script src="../assets/jquery/jquery.js"></script>
-        <script src="../assets/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="../assets/template-native/template-native.js"></script>
-        <script type="text/template" id="templateId">
-              <% for(var i=0;i<data.data.length;i++){ %>
-              <li>
-                  <div>
-                      <!-- 获取response data, 添加分页 -->
-                      <img data-tokenid="<%= data.data[i].token_id %>" src="/content/<%=data.data[i].title%>"
-                          data-pixhash="<%= data.data[i].content_hash %>">
-                  </div>
-              </li>
-              <% } %>
+<div class="container">
+    <ul class="containerlist">
+    {{  range $i, $data := .Datalist }}
+        <li>
             <div>
-                <ul class="pagination">
-                  <li><a href="/vote?pageIndex=1">首页</a></li>
-                  <li>
-                    <a href="#" aria-label="Previous">
-                      <span aria-hidden="true">&laquo;</span>
-                    </a>
-                  </li>
-                  <li>
-                      <a href="#" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                      </a>
-                  </li>
-                  <li><a href="/vote?pageIndex=<%= data.total_page %>">尾页</a></li>
-                  <li>共<%= data.total_count %>条记录/共<%= data.total_page %>页/当前<%= data.current_page %>页</li>
-                </ul>
+                <!-- 获取response data, 添加分页 -->
+                <img data-tokenid="{{ .TokenID }}" src="{{ .Content }}"
+                    data-pixhash="{{ .ContentHash }}">
             </div>
-        </script>
-        <script>
-            $(function () {
-                var pdj = {
-                    // 网页加载时, 开始初始化
-                    init: function () {
-                        this.checkUser();
-                    },
-                    checkUser: function () {
-                        var _this = this;
-                        $.ajax({
-                            url: "/session",
-                            type: "get",
-                            success: function (data) {
-                                console.log(data)
-                                if (data.errno != 0) {
-                                    window.location.href = "../";
-                                } else {
-                                    _this.queryBalance();
-                                }
-                            }
-                        });
-                    },
-                    queryBalance: function () {
-                        $.ajax({
-                            // url: "/vote?pageIndex=2", // 将页面与路由进行绑定
-                            url: "/vote", // 将页面与路由进行绑定
-                            type: "get",
-                            success: function (data) {
-                                console.log(data)
-                                var html = template("templateId", data);
-                                $(".containerlist").html(html);
-                                }
-                            })
-                        }
-                    };
-                    pdj.init();
-                $(".containerlist").on("click", "img", function () {
-                    var tokenID = this.dataset['tokenid'];
-                    var pixhash = this.dataset["pixhash"]
-                    //当前投票的数量。 var  voteCount=$(this).next().find("span").text();
-                    var obj = {
-                        token_id: tokenID,
-                        voteCount: 1,
-                        contentHash: pixhash,
-                    };
-                    // var strparams = JSON.stringify(obj);
-                    // console.log(strparams)
-                    $.ajax({
-                        type: "get",
-                        url: "/content/vote",
-                        contentType: "application/json",
-                        data: obj,
-                        success: function (data) {
-                            if (data.errno == 0) {
-                                alert("投票成功");
-                            } else {
-                                alert(data.errmsg)
-                            }
-                        }
-                    })
-                });
-            });
-        </script>
-    </body>
-</html>
+        </li>
+    {{ end }}
+    </ul>
+</div>
+<nav aria-label="Page navigation">
+    <ul class="pagination" id="page">
+        <li>
+            <a href="/voteplace?id=1">first</a>
+        </li>
+        {{ if eq .firstPage true }}
+        <li>
+            <span aria-hidden="true">&laquo;</span>
+        </li>
+        {{ else }}
+        <li>
+            <a href="/voteplace?id={{.current | PrePage}}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        {{ end }}
+
+        {{ if eq .lastPage true }}
+        <li>
+            <span aria-hidden="true">&raquo;</span>
+        </li>
+        {{ else }}
+        <li>
+            <a href="/voteplace?id={{.current | NextPage}}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        {{ end }}
+        <li><a href="/voteplace?id={{.pageCount}}">last</a></li>
+        <li class="sum">共{{.count}}条记录/共{{.pageCount}}页/当前{{.current}}页</li>
+    </ul>
+</nav>
+<link rel="stylesheet" href="/public/css/vote.css">
+<script>
+    $(function () {
+        $(".containerlist").on("click", "img", function () {
+            var tokenID = this.dataset['tokenid'];
+            var pixhash = this.dataset["pixhash"]
+            //当前投票的数量。 var  voteCount=$(this).next().find("span").text();
+            var obj = {
+                token_id: tokenID,
+                voteCount: 1,
+                contentHash: pixhash,
+            };
+            // var strparams = JSON.stringify(obj);
+            // console.log(strparams)
+            $.ajax({
+                type: "get",
+                url: "/vote",
+                contentType: "application/json",
+                data: obj,
+                success: function (data) {
+                    if (data.errno == 0) {
+                        alert("投票成功");
+                    } else {
+                        alert(data.errmsg)
+                    }
+                }
+            })
+        });
+    });
+</script>

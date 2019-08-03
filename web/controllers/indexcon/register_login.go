@@ -48,7 +48,6 @@ func (c *IndexController) PostRegister() {
 	defer utils.ResponseData(c.Ctx, &resp)
 	//2. 解析数据
 	account := viewmodels.Accounts{}
-
 	/*
 		将前端传过来的数据, 与dbs.Accounts进行数据绑定
 		&dbs.Account{

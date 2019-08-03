@@ -4,16 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"math/big"
 	"os"
+	"sort"
 	"time"
 
 	"eilieili/conf"
+	"eilieili/datasource"
+	"eilieili/services"
 	"eilieili/web/utils"
 
 	"github.com/ethereum/go-ethereum"
-
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -252,12 +253,12 @@ func EtherTransfer(from, newAcc string) (string, error) {
 func VoteTo(from, pass string, tokenID int64) error {
 	cli, err := ethclient.Dial(conf.Config.Eth.Connstr)
 	if err != nil {
-		fmt.Println("failed to ethclient.Dial", err)
+		fmt.Println("failed to eth.Voteto ethclient.Dial", err)
 		return err
 	}
 	instance, err := NewPxa(common.HexToAddress(conf.Config.Eth.PxaAddr), cli)
 	if err != nil {
-		fmt.Println("failed to eths.NewPxa", err)
+		fmt.Println("failed to eth.Voteto eths.NewPxa", err)
 		return err
 	}
 	// 设置签名, owner的keyStore文件
@@ -266,18 +267,18 @@ func VoteTo(from, pass string, tokenID int64) error {
 
 	file, err := os.Open(conf.Config.Eth.Keydir + "/" + fileName)
 	if err != nil {
-		fmt.Println("failed to os.Open", err)
+		fmt.Println("failed to eth.Voteto os.Open err", err)
 		return err
 	}
 	auth, err := bind.NewTransactor(file, pass)
 	if err != nil {
-		fmt.Println("failed to bind.NewTransactor", err)
+		fmt.Println("failed to eth.Voteto bind.NewTransactor err", err)
 		return err
 	}
 	// string -> [32]byte
 	_, err = instance.Vote(auth, big.NewInt(tokenID))
 	if err != nil {
-		fmt.Println("failed to Vote", err)
+		fmt.Println("failed to eth.Voteto Vote err", err)
 		return err
 	}
 	// 投票成功之后, 转30 erc20, 给基金会
@@ -287,31 +288,30 @@ func VoteTo(from, pass string, tokenID int64) error {
 	// StorageVoteCount()
 	return nil
 }
-/*
+
 // StorageVoteCount ...
 func StorageVoteCount() error {
 	cli, err := ethclient.Dial(conf.Config.Eth.Connstr)
 	if err != nil {
-		fmt.Println("failed to ethclient.Dial", err)
+		fmt.Println("failed to eth.StorageVoteCount ethclient.Dial", err)
 		return err
 	}
 	instance, err := NewPxa(common.HexToAddress(conf.Config.Eth.PxaAddr), cli)
 	if err != nil {
-		fmt.Println("failed to eths.NewPxa", err)
+		fmt.Println("failed to eth.StorageVoteCount eths.NewPxa", err)
 		return err
 	}
 	// 查询vote数据库中的token_id 进行遍历
 	CountStorage = Assets{}
-	tokenSQL := fmt.Sprintf("select distinct token_id from vote")
-	tokenIds, num, err := dbs.DBQuery(tokenSQL)
+	datalist := services.NewVoteService().GetAll()
 
-	if num > 0 && err == nil {
+	if len(datalist) >= 1 {
 		// string -> [32]byte
-		for _, tokenID := range tokenIds {
-			newTokenID, _ := strconv.ParseInt(tokenID["token_id"], 10, 32)
+		for _, data := range datalist {
+			newTokenID := int64(data.TokenId)
 			newAsset, err := instance.Assets(nil, big.NewInt(newTokenID))
 			if err != nil {
-				fmt.Println("failed to instance.Assets", err)
+				fmt.Println("failed to eth.StorageVoteCount instance.Assets", err)
 				return err
 			}
 			CountStorage = append(CountStorage, voteAsset{newTokenID, newAsset.VoteCount.Int64()})
@@ -335,23 +335,23 @@ func (s Assets) ViewVoteCount() (newS Assets) {
 	fmt.Println(newS)
 	return
 }
-*/
+
 // GetPxcBalance ...
 func GetPxcBalance(from string) (int64, error) {
 	cli, err := ethclient.Dial(conf.Config.Eth.Connstr)
 	if err != nil {
-		fmt.Println("failed to ethclient.Dial", err)
+		fmt.Println("failed to eth.GetPxcBalance ethclient.Dial", err)
 		return -1, err
 	}
 	instance, err := NewPxa(common.HexToAddress(conf.Config.Eth.PxaAddr), cli)
 	if err != nil {
-		fmt.Println("failed to eths.NewPxa", err)
+		fmt.Println("failed to eth.GetPxcBalance eths.NewPxa", err)
 		return -1, err
 	}
 	balance, _ := instance.GetPXCBalance(nil, common.HexToAddress(from))
 	return balance.Int64(), nil
 }
-/*
+
 // Award ...
 func (s *Assets) Award(timeout <-chan time.Time) {
 	go func() {
@@ -384,16 +384,15 @@ func (s *Assets) Award(timeout <-chan time.Time) {
 				// ws[newS[2].tokenID] = 300
 
 				for k, v := range ws {
-					WinnerSQL := fmt.Sprintf("select distinct a.address from auction a, vote b where a.token_id= b.token_id and b.token_id='%d'", k)
-					WinnerAddress, num, err := dbs.DBQuery(WinnerSQL)
-					if err != nil || num <= 0 {
-						fmt.Println("failed to dbs.DBQuery(WinnerSQL)")
+					dao := utils.NewContentinfoService(datasource.InstanceDbMaster())
+					Address, _, err := dao.InnerAddress(int(k))
+					if err != nil {
+						fmt.Println("failed to eth.Award InnerAddress err ", err)
 						return
 					}
-					Address := WinnerAddress[0]["address"]
 					err = EthErc20Transfer(conf.Config.Eth.Fundation, conf.Config.Eth.FundationPWD, Address, v)
 					if err != nil {
-						fmt.Println("failed to EthErc20Transfer")
+						fmt.Println("failed to eth.Award EthErc20Transfer")
 						return
 					}
 				}
@@ -403,4 +402,3 @@ func (s *Assets) Award(timeout <-chan time.Time) {
 		}
 	}()
 }
-*/

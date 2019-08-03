@@ -1,8 +1,10 @@
 package utils
 
 import (
-	"eilieili/models"
 	"log"
+	"strconv"
+
+	"eilieili/models"
 
 	"github.com/go-xorm/xorm"
 )
@@ -11,6 +13,7 @@ type ContentInfo struct {
 	models.Content        `xorm:"extends"`
 	models.AccountContent `xorm:"extends"`
 	models.Auction        `xorm:"extends"`
+	models.Vote           `xorm:"extends"`
 }
 
 type ResContentInfo struct {
@@ -28,6 +31,10 @@ type ResAuctionInfo struct {
 	Price       int
 	ContentHash string
 	Content     string
+}
+
+type ResAddressInfo struct {
+	Address string
 }
 
 func (ContentInfo) TableName() string {
@@ -72,10 +79,26 @@ func (c *ContentinfoDao) InnerContent(address string) (*map[int]ResContentInfo, 
 func (c *ContentinfoDao) InnerAuction(s map[string]int) (*map[int]ResAuctionInfo, int, error) {
 	var contentinfo []ContentInfo
 	var err error
-	for i, v := range s {
-		err = c.engine.Join("INNER", "auction", "auction.content_hash = content.content_hash").
-			Where(i+"=?", v).Find(&contentinfo)
+	// status/token_id
+	// start, offset
+	if s != nil {
+		for i, v := range s {
+			start, err := strconv.ParseInt(i, 10, 32)
+			// int
+			if err == nil {
+				// limitSQL := fmt.Sprintf("select token_id, title, a.content_hash from account_content a,content b where a.content_hash = b.content_hash limit %d, %d", startCount, stopCount)
+				log.Println("v, int(start): ", v, int(start))
+				err = c.engine.Join("INNER", "auction", "auction.content_hash = content.content_hash").Limit(int(start), v).Find(&contentinfo)
+			} else {
+				// string
+				err = c.engine.Join("INNER", "auction", "auction.content_hash = content.content_hash").
+					Where(i+"=?", v).Find(&contentinfo)
+			}
+		}
+	} else {
+		err = c.engine.Join("INNER", "auction", "auction.content_hash = content.content_hash").Find(&contentinfo)
 	}
+
 	if err != nil {
 		log.Println("failed to join ....", err)
 		return nil, 0, err
@@ -96,6 +119,21 @@ func (c *ContentinfoDao) InnerAuction(s map[string]int) (*map[int]ResAuctionInfo
 	log.Println("res: ", res)
 	num := len(res)
 	return &res, num, nil
+}
+
+// InnerAddress select distinct a.address from auction a, vote b where a.token_id= b.token_id and b.token_id='%d'
+func (c *ContentinfoDao) InnerAddress(id int) (string, int, error) {
+	var contentinfo ContentInfo
+	var err error
+	ok, err := c.engine.Join("INNER", "auction", "auction.content_hash = content.content_hash").
+		Where("tokenid=?", id).Get(&contentinfo)
+
+	if !ok || err != nil {
+		log.Println("failed to join ....", err)
+		return "", 0, err
+	}
+	res := contentinfo.Vote.Address
+	return res, 0, nil
 }
 
 // func main() {

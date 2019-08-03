@@ -3,12 +3,13 @@ package indexcon
 import (
 	"fmt"
 	"log"
-	"time"
 	"strconv"
+	"sync"
+	"time"
 
 	"eilieili/comm"
-	"eilieili/eths"
 	"eilieili/datasource"
+	"eilieili/eths"
 	"eilieili/models"
 	"eilieili/web/utils"
 	"eilieili/web/viewmodels"
@@ -19,6 +20,7 @@ import (
 
 var (
 	endBid = false
+	mutex  sync.Mutex
 )
 
 // PostAuction ...
@@ -38,16 +40,7 @@ func (c *IndexController) PostAuction() mvc.Result {
 
 	// 2. 插入拍卖(auction)数据库
 	ts := comm.NowUnix()
-	user := comm.GetLoginUser(c.Ctx.Request())
-	// username, passwd := c.getSession()
-	// fmt.Println("the user: ", username)
-	// TODO: 获得address, 直接从缓存中读取/cookies
-	userobj, _ := c.ServiceAccount.GetByUserName(user.Username)
-	if err != nil {
-		log.Println("user_index.PostContent GetByUserName err: ", err)
-		return nil
-	}
-	address := userobj.Address
+	address := c.GetAddress()
 	newAuction := models.Auction{
 		ContentHash: auction.ContentHash,
 		Address:     address,
@@ -87,7 +80,6 @@ func (c *IndexController) PostAuction() mvc.Result {
 	ticker := time.NewTicker(time.Minute * 3)
 	go func() {
 		for i := 1; i > 0; i-- {
-			// for {
 			<-ticker.C
 			// c.EndBid(int(auction.TokenID), int(auction.Percent), resp)
 		}
@@ -106,13 +98,13 @@ func (c *IndexController) PostAuction() mvc.Result {
 // EndBid ...
 func (c *IndexController) EndBid(tokenID, weight int, resp utils.Resp) error {
 	// TODO: 数据库读取过多, Bidwinner/auction 数据的操作, 可以直接从缓存中读取
-	// 3.5 根据tokenId, 查询出最高价者的address, price
+	// 1 根据tokenId, 查询出最高价者的address, price
 	winDetail := c.ServiceBidwinner.GetByTokenId(tokenID)
 	price := winDetail.Price
 	fmt.Println("price: ", price)
 	// address := winDetail.Address
-	// 4. 数据库操作, price
-	// 4.1 获取拍卖时的价格
+	// 2. 数据库操作, price
+	// 2.1 获取拍卖时的价格
 	auctPrice := c.ServiceAuction.GetByStatus(tokenID, 1)
 	_priceAuct := auctPrice.Price
 	fmt.Println("_priceAuct: ", _priceAuct)
@@ -122,7 +114,7 @@ func (c *IndexController) EndBid(tokenID, weight int, resp utils.Resp) error {
 		log.Println("failed to Create(&bid) err: ", err)
 		return nil
 	}
-	// 4.1 更新content数据库: percent(总的-参与拍卖的)/price()
+	// 3.1 更新content数据库: percent(总的-参与拍卖的)/price()
 	dao := utils.NewContentinfoService(datasource.InstanceDbMaster())
 	s := make(map[string]int)
 	s["token_id"] = tokenID
@@ -154,14 +146,14 @@ func (c *IndexController) EndBid(tokenID, weight int, resp utils.Resp) error {
 		fmt.Println("aleady EndBid, Waiting SpiltAsset and transfer .....")
 		// 5. 操作以太坊: 资产分割, erc20转账
 		go func() {
-			err = eths.EthSplitAsset(configs.Config.Eth.Fundation, configs.Config.Eth.FundationPWD, address, tokenID, weight)
+			err = eths.EthSplitAsset(conf.Config.Eth.Fundation, conf.Config.Eth.FundationPWD, address, tokenID, weight)
 			if err != nil {
 				resp.Errno = utils.RECODE_MINTERR
 				fmt.Println("failed to eths.EthSplitAsset ", err)
 				return
 			}
 
-			err = eths.EthErc20Transfer(address, configs.Config.Eth.FundationPWD, to, price)
+			err = eths.EthErc20Transfer(address, conf.Config.Eth.FundationPWD, to, price)
 			if err != nil {
 				resp.Errno = utils.RECODE_ERC20ERR
 				fmt.Println("failed to eths.EthErc20Transfer ", err)
@@ -171,7 +163,6 @@ func (c *IndexController) EndBid(tokenID, weight int, resp utils.Resp) error {
 			fmt.Println("Success SpiltAsset and transfer .....")
 			endBid = true
 		}()
-
 	*/
 	return nil
 }
@@ -226,6 +217,8 @@ func (c *IndexController) GetBid() error {
 	_tokenid, _ := strconv.ParseInt(tokenID, 10, 32)
 
 	// 3.5 获取该address响应erc20 余额, 保证其有足够(>=30)的token进行该次投票
+	address := c.GetAddress()
+	log.Println("get address: ", address)
 	erc20Balance, _ := eths.GetPxcBalance(address)
 	if erc20Balance < _price || err != nil {
 		fmt.Printf("%s: your erc20 balance is poor, connot operate this vote\n", address)
@@ -234,26 +227,30 @@ func (c *IndexController) GetBid() error {
 	}
 
 	// 从bidwinner中取出当前最大的price, 然后进行比较
-	maxSQL := fmt.Sprintf("select price from bidwinner where token_id='%d'", _tokenid)
-	// fmt.Println(maxSQL)
-	value := c.ServiceBidwinner.GetByTokenId(_tokenid)
+	value := c.ServiceBidwinner.GetByTokenId(int(_tokenid))
 	Price := value.Price
+	id := value.Id
 
 	// 同步锁, 防止多人同时修改数据
 	mutex.Lock()
 	defer mutex.Unlock()
 
 	// fmt.Printf("the price: %d and Price: %d\n", _price, Price)
-	if _price > Price {
-		Price = _price
+	if int(_price) > Price {
+
+		log.Println("_price, Price: ", _price, Price)
+		Price = int(_price)
+		// TODO: xorm update-- 只能根据id进行更新, 无法定义其他所需的字段
 		theWinner := models.Bidwinner{
-			TokenId: _tokenid,
-			Price: _price,
+			Id:      int(id), // 必须传入id, 否则无法准确定位到该数据
+			TokenId: int(_tokenid),
+			Price:   Price,
 			Address: address,
-			Ts: comm.NowUnix(),
+			Ts:      comm.NowUnix(),
 		}
-		err = c.ServiceBidwinner.Update(&theWinner, []string{"price","address"})
+		err = c.ServiceBidwinner.Update(&theWinner, []string{"price", "address", "ts"})
 		if err != nil {
+			log.Println("auction Update failed err: ", err)
 			resp.Errno = utils.RECODE_DBERR
 			return err
 		}
@@ -262,6 +259,18 @@ func (c *IndexController) GetBid() error {
 		resp.Errno = utils.RECODE_DATAERR
 		return err
 	}
-
 	return nil
+}
+
+func (c *IndexController) GetAddress() string {
+	user := comm.GetLoginUser(c.Ctx.Request())
+	// username, passwd := c.getSession()
+	// fmt.Println("the user: ", username)
+	// TODO: 获得address, 直接从缓存中读取/cookies
+	userobj, err := c.ServiceAccount.GetByUserName(user.Username)
+	if err != nil {
+		log.Println("user_index.PostContent GetByUserName err: ", err)
+		return ""
+	}
+	return userobj.Address
 }

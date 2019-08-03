@@ -21,6 +21,7 @@ type VoteService interface {
 	Update(data *models.Vote, columns []string) error
 	Create(data *models.Vote) error
 	GetByTokenid(id int) *models.Vote
+	GetAll() []models.Vote
 }
 
 type voteService struct {
@@ -48,4 +49,8 @@ func (s *voteService) Create(data *models.Vote) error {
 
 func (s *voteService) GetByTokenid(id int) *models.Vote {
 	return s.dao.GetByTokenid(id)
+}
+
+func (s *voteService) GetAll() []models.Vote {
+	return s.dao.GetAll()
 }

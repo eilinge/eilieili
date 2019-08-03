@@ -48,3 +48,12 @@ func (d *VoteDao) GetByTokenid(id int) *models.Vote {
 	data.TokenId = 0
 	return data
 }
+
+func (v *VoteDao) GetAll() []models.Vote {
+	datalist := []models.Vote{}
+	err := v.engine.Distinct().Find(datalist)
+	if err != nil {
+		return nil
+	}
+	return datalist
+}
