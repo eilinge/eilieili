@@ -87,7 +87,7 @@ func (c *ContentinfoDao) InnerAuction(s map[string]int) (*map[int]ResAuctionInfo
 			// int
 			if err == nil {
 				// limitSQL := fmt.Sprintf("select token_id, title, a.content_hash from account_content a,content b where a.content_hash = b.content_hash limit %d, %d", startCount, stopCount)
-				log.Println("v, int(start): ", v, int(start))
+				// log.Println("v, int(start): ", v, int(start))
 				err = c.engine.Join("INNER", "auction", "auction.content_hash = content.content_hash").Limit(int(start), v).Find(&contentinfo)
 			} else {
 				// string
@@ -103,11 +103,11 @@ func (c *ContentinfoDao) InnerAuction(s map[string]int) (*map[int]ResAuctionInfo
 		log.Println("failed to join ....", err)
 		return nil, 0, err
 	}
-	// log.Println("contentinfo: ", contentinfo)
+	// log.Printf("contentinfo: %#v\n", contentinfo)
 	res := make(map[int]ResAuctionInfo)
 	for i, info := range contentinfo {
 		res[i] = ResAuctionInfo{
-			TokenID:     info.Auction.TokenId,
+			TokenID:     info.AccountContent.TokenId,
 			Title:       info.Content.Title,
 			ContentHash: info.Content.ContentHash,
 			Content:     info.Content.Content,
@@ -116,7 +116,7 @@ func (c *ContentinfoDao) InnerAuction(s map[string]int) (*map[int]ResAuctionInfo
 			Price:       info.Content.Price,
 		}
 	}
-	log.Println("res: ", res)
+	// log.Println("res: ", res)
 	num := len(res)
 	return &res, num, nil
 }
@@ -126,7 +126,7 @@ func (c *ContentinfoDao) InnerAddress(id int) (string, int, error) {
 	var contentinfo ContentInfo
 	var err error
 	ok, err := c.engine.Join("INNER", "auction", "auction.content_hash = content.content_hash").
-		Where("tokenid=?", id).Get(&contentinfo)
+		Where("token_id=?", id).Get(&contentinfo)
 
 	if !ok || err != nil {
 		log.Println("failed to join ....", err)

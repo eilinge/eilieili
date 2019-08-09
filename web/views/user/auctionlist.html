@@ -50,7 +50,7 @@
                     url: "/auctions",
                     type: "get",
                     success: function (data) {
-                        console.log(data)
+                        // console.log(data)
                         var html = template("templateId", data);
                         $(".containerlist").html(html);
                         }

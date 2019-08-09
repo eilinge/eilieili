@@ -303,6 +303,7 @@ func StorageVoteCount() error {
 	}
 	// 查询vote数据库中的token_id 进行遍历
 	CountStorage = Assets{}
+	// 根据token_id, 进行去重, 获取唯一token_id
 	datalist := services.NewVoteService().GetAll()
 
 	if len(datalist) >= 1 {
@@ -353,6 +354,7 @@ func GetPxcBalance(from string) (int64, error) {
 }
 
 // Award ...
+// TODO: 对发放奖品需要进行改进, 不需要在点击投票之后, 才进行发奖
 func (s *Assets) Award(timeout <-chan time.Time) {
 	go func() {
 		for {

@@ -34,5 +34,6 @@ func newApp() *bootstrap.Bootstrapper {
 func main() {
 	app := newApp()
 	go eths.EventSubscribe("ws://localhost:8546", conf.Config.Eth.PxaAddr)
+	go eths.StorageVoteCount()
 	app.Listen(fmt.Sprintf(":%d", port))
 }

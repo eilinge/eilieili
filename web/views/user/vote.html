@@ -4,21 +4,21 @@
         <li>
             <div>
                 <!-- 获取response data, 添加分页 -->
-                <img data-tokenid="{{ .TokenID }}" src="{{ .Content }}"
+                <img data-tokenid="{{ $data.TokenID }}" src="{{ .Content }}"
                     data-pixhash="{{ .ContentHash }}">
             </div>
         </li>
     {{ end }}
     </ul>
 </div>
-<nav aria-label="Page navigation">
+<nav aria-label="Page navigation" class="float">
     <ul class="pagination" id="page">
         <li>
             <a href="/voteplace?id=1">first</a>
         </li>
         {{ if eq .firstPage true }}
         <li>
-            <span aria-hidden="true">&laquo;</span>
+            <a href=""><span aria-hidden="true">&laquo;</span></a>
         </li>
         {{ else }}
         <li>
@@ -29,7 +29,7 @@
 
         {{ if eq .lastPage true }}
         <li>
-            <span aria-hidden="true">&raquo;</span>
+            <a href=""><span aria-hidden="true">&raquo;</span></a>
         </li>
         {{ else }}
         <li>
@@ -39,7 +39,7 @@
         </li>
         {{ end }}
         <li><a href="/voteplace?id={{.pageCount}}">last</a></li>
-        <li class="sum">共{{.count}}条记录/共{{.pageCount}}页/当前{{.current}}页</li>
+        <span class="sum">共{{.count}}条记录/共{{.pageCount}}页/当前{{.current}}页</span>
     </ul>
 </nav>
 <link rel="stylesheet" href="/public/css/vote.css">

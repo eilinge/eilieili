@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"eilieili/comm"
-	"eilieili/conf"
 	"eilieili/datasource"
 	"eilieili/eths"
 	"eilieili/models"
@@ -17,7 +16,7 @@ import (
 	"github.com/kataras/iris/mvc"
 )
 
-// VotePlace ...
+// GetVoteplace ...
 func (c *IndexController) GetVoteplace() mvc.Result {
 	// 1. 查看所有资产
 	dao := utils.NewContentinfoService(datasource.InstanceDbMaster())
@@ -41,7 +40,7 @@ func (c *IndexController) GetVoteplace() mvc.Result {
 	limit := make(map[string]int)
 	start := strconv.Itoa(countPage)
 	// limit, start
-	log.Println("countPage, start: ", countPage, countStart)
+	// log.Println("countPage, start: ", countPage, countStart)
 	limit[start] = countStart
 	datalist, _, err := dao.InnerAuction(limit)
 	if err != nil {
@@ -73,7 +72,7 @@ func (c *IndexController) GetVoteplace() mvc.Result {
 	}
 }
 
-// Vote ...
+// GetVote ...
 func (c *IndexController) GetVote() error {
 	// 1. 响应数据结构初始化
 	var resp utils.Resp
@@ -106,7 +105,8 @@ func (c *IndexController) GetVote() error {
 		resp.Errno = utils.RECODE_DATAERR
 		return err
 	}
-	// 5. 操作以太坊, 进行投票, 只能合约内将erc20 token转给tokenID的地址
-	eths.VoteTo(address, conf.Config.Eth.FundationPWD, tokenID)
+	// 5. 操作以太坊, 进行投票, 只能合约内将erc20 token转给tokenID的地址(成本较高, 还需ether在链上投票, 需要等链上确认)
+	// eths.VoteTo(address, conf.Config.Eth.FundationPWD, tokenID)
+	// 5.1 使用redis缓存, 在redis上进行投票, 减少ether花费
 	return nil
 }

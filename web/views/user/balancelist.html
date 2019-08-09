@@ -1,19 +1,20 @@
 
-<div class="containerlist">
-    {{range $data := .Data}}
-    <li>
-        <div>
-            <img src="{{ $data.Title }}" alt="">
+<div class="container">
+    <ul class="containerlist">
+        {{range $data := .Data}}
+        <li>
             <div>
-                <b>所剩份额:</b><span>{{ .Weight }}</span>
-                <input type="text" placeholder="份数">
-                <input type="text" placeholder="价格">
-                <a class="account_event" href="javacript:;" data-tokenid="{{.TokenID}}"
-                    data-account="{{.ContentHash}}">拍卖</a>
+                <img src="{{ $data.Title }}" alt="">
+                <div>
+                    <b>所剩份额:</b><span>{{ .Weight }}</span>
+                    <input type="text" placeholder="份数">
+                    <input type="text" placeholder="价格">
+                    <a class="account_event" href="javacript:;" data-tokenid="{{.TokenID}}"
+                        data-account="{{.ContentHash}}">拍卖</a>
+                </div>
             </div>
-        </div>
-    </li>
-    {{end}}
+        </li>
+        {{end}}
 </div>
 <br style="clear: both;" />
 
@@ -59,7 +60,7 @@ $(function () {
                     token_id: tokenid
 
                 };
-                console.log(obj)
+                
                 var strparams = JSON.stringify(obj);
                 $.ajax({
                     type: "post",
@@ -68,8 +69,11 @@ $(function () {
                     data: strparams,
                     success: function (data) {
                         // 在本页跳转到url所指的链接
+                        console.log(data)
                         alert("bid start, after 2 minute end")
-                        window.location.href = "auctionlist.html";
+                        if (data.errno == 0) {
+                            window.location.href = "/auctions";
+                        }
                     }
                 })
             })

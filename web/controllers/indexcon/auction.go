@@ -24,7 +24,7 @@ var (
 )
 
 // PostAuction ...
-func (c *IndexController) PostAuction() mvc.Result {
+func (c *IndexController) PostAuction() error {
 	// 0.5. 响应数据结构初始化
 	var resp utils.Resp
 	resp.Errno = utils.RECODE_OK
@@ -34,7 +34,7 @@ func (c *IndexController) PostAuction() mvc.Result {
 	auction := viewmodels.Auction{}
 	err := c.Ctx.ReadJSON(&auction)
 	if auction.Percent <= 0 || auction.Price <= 0 {
-		log.Println("failed to ReadJSON(&auction) err ", err)
+		log.Println("failed to auction.PostAuction ReadJSON(auction) err ", err)
 		return nil
 	}
 
@@ -50,10 +50,11 @@ func (c *IndexController) PostAuction() mvc.Result {
 		Status:      1,
 		Ts:          ts,
 	}
-	fmt.Println("auction: ", newAuction)
+	// fmt.Println("auction: ", newAuction)
+	// TODO: 需要将资产列表的状态更新为1
 	err = c.ServiceAuction.Create(&newAuction)
 	if err != nil {
-		log.Println("failed to Create(&newAuction) err: ", err)
+		log.Println("failed to Create(newAuction) err: ", err)
 		return nil
 	}
 	fmt.Println("start insert into bidWinner...")
@@ -84,15 +85,16 @@ func (c *IndexController) PostAuction() mvc.Result {
 			// c.EndBid(int(auction.TokenID), int(auction.Percent), resp)
 		}
 	}()
-	return mvc.View{
-		Name: "user/autionlist.html",
-		Data: iris.Map{
-			"Channel": "autcion",
-			"Data":    "",
-		},
+	return nil
+	// return mvc.View{
+	// 	Name: "user/autionlist.html",
+	// 	Data: iris.Map{
+	// 		"Channel": "autcion",
+	// 		"Data":    "",
+	// 	},
 
-		Layout: "shared/indexlayout.html",
-	}
+	// 	Layout: "shared/indexlayout.html",
+	// }
 }
 
 // EndBid ...
@@ -262,6 +264,7 @@ func (c *IndexController) GetBid() error {
 	return nil
 }
 
+// GetAddress ...
 func (c *IndexController) GetAddress() string {
 	user := comm.GetLoginUser(c.Ctx.Request())
 	// username, passwd := c.getSession()

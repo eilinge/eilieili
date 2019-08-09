@@ -70,7 +70,7 @@ create table `vote`
    `vote_id`              int primary key auto_increment,
    `address`              varchar(256) NOT NULL DEFAULT '' COMMENT 'ether地址',
    -- content_hash         varchar(256), (content_hash不唯一: 原资产=已分割资产)
-   `token_id`             int unsigned unique NOT NULL DEFAULT '0' COMMENT '资产_id',
+   `token_id`             int unsigned NOT NULL DEFAULT '0' COMMENT '资产_id',
    `vote_time`            int(20) unsigned NOT NULL DEFAULT '0' COMMENT '投票时间',
    `comment`              varchar(256) NOT NULL DEFAULT '' COMMENT '备注'
 )ENGINE= InnoDB DEFAULT CHARSET = utf8mb4;

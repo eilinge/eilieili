@@ -51,9 +51,10 @@ func (d *VoteDao) GetByTokenid(id int) *models.Vote {
 
 func (v *VoteDao) GetAll() []models.Vote {
 	datalist := []models.Vote{}
-	err := v.engine.Distinct().Find(datalist)
+	err := v.engine.Distinct("token_id").Find(&datalist)
 	if err != nil {
 		return nil
 	}
+	// log.Println("data: ", datalist)
 	return datalist
 }
