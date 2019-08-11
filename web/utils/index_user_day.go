@@ -2,12 +2,12 @@ package utils
 
 import (
 	"fmt"
-	"math"
 	"log"
+	"math"
 	"time"
 
-	"eilieili/datasource"
 	"eilieili/comm"
+	"eilieili/datasource"
 )
 
 const userFrameSize = 2
@@ -15,6 +15,7 @@ const userFrameSize = 2
 func init() {
 	resetGroupUserList()
 }
+
 /*
 用户今日抽奖次数, hash中的计数器, utils/user_day
 

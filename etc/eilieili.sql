@@ -78,6 +78,19 @@ create table `vote`
 alter table `vote` comment '投票表，一个账户一个图片，只能投一票，一票代表30pxc';
 -- CREATE UNIQUE INDEX vote_uindex ON `vote` (address);
 
+-- 投票票数
+create table `voteCount`
+(
+   `vote_id`              int primary key auto_increment,
+   `address`              varchar(256) NOT NULL DEFAULT '' COMMENT 'ether地址',
+   `token_id`             int unsigned NOT NULL DEFAULT '0' COMMENT '资产_id',
+   `vote_time`            int(20) unsigned NOT NULL DEFAULT '0' COMMENT '投票时间',
+   `amount`               int(20) unsigned NOT NULL DEFAULT '0' COMMENT '投票票数'
+)ENGINE= InnoDB DEFAULT CHARSET = utf8mb4;
+
+alter table `vote` comment '投票表，一个账户一个图片，只能投一票，一票代表30pxc';
+
+
 DROP TABLE IF EXISTS `lt_blackip`;
 
 CREATE TABLE `lt_blackip`

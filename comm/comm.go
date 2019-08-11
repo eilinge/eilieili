@@ -155,6 +155,13 @@ func NextDayDuration() time.Duration {
 	return next.Sub(time.Now())
 }
 
+// VoteEnd TODO: 3天投票结束时间, 按小时计算
+func VoteEnd() time.Duration {
+	year, month, day := time.Now().Add(time.Hour * 24 * 3).Date()
+	next := time.Date(year, month, day, 0, 0, 0, 0, configs.SysTimeLocation)
+	return next.Sub(time.Now())
+}
+
 // GetInt64 从接口类型安全获取到int64
 func GetInt64(i interface{}, d int64) int64 {
 	if i == nil {

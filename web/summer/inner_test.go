@@ -46,7 +46,7 @@ func NewContentinfoService(engine *xorm.Engine) *ContentinfoDao {
 func (c *ContentinfoDao) InnerContent() {
 	var users []UserGroup
 	err := c.engine.Cols("user.name", "`group.name`").Join("INNER", "`group`", "`group`.id = user.groupid").Find(&users)
-	err := c.engine.Join("INNER", "`group`", "`group`.id = user.groupid").Find(&users)
+	// err := c.engine.Join("INNER", "`group`", "`group`.id = user.groupid").Find(&users)
 	if err != nil {
 		log.Println("failed to join ....", err)
 		return
