@@ -78,24 +78,24 @@ create table `vote`
 alter table `vote` comment '投票表，一个账户一个图片，只能投一票，一票代表30pxc';
 -- CREATE UNIQUE INDEX vote_uindex ON `vote` (address);
 
+DROP TABLE IF EXISTS `voteCount`;
 -- 投票票数
 create table `voteCount`
 (
-   `vote_id`              int primary key auto_increment,
-   `address`              varchar(256) NOT NULL DEFAULT '' COMMENT 'ether地址',
-   `token_id`             int unsigned NOT NULL DEFAULT '0' COMMENT '资产_id',
-   `vote_time`            int(20) unsigned NOT NULL DEFAULT '0' COMMENT '投票时间',
-   `amount`               int(20) unsigned NOT NULL DEFAULT '0' COMMENT '投票票数'
+   `id`              	int primary key auto_increment,
+   `address`            varchar(256) NOT NULL DEFAULT '' COMMENT 'ether地址',
+   `token_id`           int unsigned unique NOT NULL DEFAULT '0' COMMENT '资产_id',
+   `vote_time`          int(20) unsigned NOT NULL DEFAULT '0' COMMENT '投票时间',
+   `amount`             int(20) unsigned NOT NULL DEFAULT '0' COMMENT '投票票数'
 )ENGINE= InnoDB DEFAULT CHARSET = utf8mb4;
 
 alter table `vote` comment '投票表，一个账户一个图片，只能投一票，一票代表30pxc';
-
 
 DROP TABLE IF EXISTS `lt_blackip`;
 
 CREATE TABLE `lt_blackip`
 (
-   `id` int(10)unsigned NOT NULL AUTO_INCREMENT,
+   `id` int(10)unsigned primary key NOT NULL AUTO_INCREMENT,
    `ip` varchar(50)NOT NULL DEFAULT '' COMMENT 'IP地址',
    `blacktime` int(10)unsigned NOT NULL DEFAULT '0' COMMENT '黑名单限制到期时间',
    `sys_created` int(10)unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
@@ -108,7 +108,7 @@ DROP TABLE IF EXISTS `lt_userday`;
 
 CREATE TABLE `lt_userday`
 (
-   `id` int(10)unsigned NOT NULL AUTO_INCREMENT,
+   `id` int(10)unsigned primary key NOT NULL AUTO_INCREMENT,
    `uid` int(10)unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
    `day` int(10)unsigned NOT NULL DEFAULT '0' COMMENT '日期，如：20180725',
    `num` int(10)unsigned NOT NULL DEFAULT '0' COMMENT '次数',
@@ -123,7 +123,7 @@ DROP TABLE IF EXISTS `lt_user`;
 
 CREATE TABLE `lt_user`
 (
-   `id` int(10)unsigned NOT NULL AUTO_INCREMENT,
+   `id` int(10) unsigned primary key NOT NULL AUTO_INCREMENT,
    `username` varchar(50)NOT NULL DEFAULT '' COMMENT '用户名',
    `blacktime` int(10)unsigned NOT NULL DEFAULT '0' COMMENT '黑名单限制到期时间',
    `realname` varchar(50)NOT NULL DEFAULT '' COMMENT '联系人',

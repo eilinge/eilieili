@@ -1,9 +1,7 @@
 package dao
 
 import (
-	"database/sql"
 	"eilieili/models"
-	"fmt"
 
 	"github.com/go-xorm/xorm"
 )
@@ -48,15 +46,5 @@ func (d *ContentDao) GetByContentHash(hash string) *models.Content {
 		return data
 	}
 	data.ContentHash = ""
-	return data
-}
-
-func (d *ContentDao) InnerConTentHash(address string) sql.Result {
-	sql := fmt.Sprintf("select a.content_hash,weight,a.title,b.token_id from content a, account_content b where a.content_hash = b.content_hash and address='%s'", address)
-	data, err := d.engine.Exec(sql)
-	// ok, err := d.engine.Get(data)
-	if err == nil {
-		return data
-	}
 	return data
 }

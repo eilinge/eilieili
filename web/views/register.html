@@ -34,30 +34,31 @@
 </div>
 
 <script>
-$(function () {
-    $(".yc_login_btn").on("click", function () {
+    $(function () {
+        $(".yc_login_btn").on("click", function () {
 
-        // 输出以数组形式序列化表单值的结果
-        var datas = $(".yc_login_form").serializeArray();
-        var params = {};
-        for (var i = 0; i < datas.length; i++) {
-            params[datas[i].name] = datas[i].value
-        }
-        console.log("params: ", params)
-        var strParams = JSON.stringify(params);
-        $.ajax({
-            url: "/register",
-            contentType: "application/json",
-            data: strParams,
-            method: "post",
-            success: function (data) {
-                if (data.errno == 0) {
-                    window.location.href = '/public/userindex.html';
-                } else {
-                    alert(data.errmsg);
-                }
+            // 输出以数组形式序列化表单值的结果
+            var datas = $(".yc_login_form").serializeArray();
+            var params = {};
+            for (var i = 0; i < datas.length; i++) {
+                params[datas[i].name] = datas[i].value
             }
-        })
+            console.log("params: ", params)
+            var strParams = JSON.stringify(params);
+            $.ajax({
+                url: "/register",
+                contentType: "application/json",
+                data: strParams,
+                method: "post",
+                success: function (data) {
+                    console.log("response data: ", data)
+                    if (data.errno == 0) {
+                        window.location.href = '/login';
+                    } else {
+                        alert(data.errmsg);
+                    }
+                }
+            })
+        });
     });
-});
 </script>

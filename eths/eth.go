@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/big"
 	"os"
 	"sort"
@@ -290,42 +291,23 @@ func VoteTo(from, pass string, tokenID int64) error {
 }
 
 // StorageVoteCount ...
-func StorageVoteCount() error {
-	cli, err := ethclient.Dial(conf.Config.Eth.Connstr)
-	if err != nil {
-		fmt.Println("failed to eth.StorageVoteCount ethclient.Dial", err)
-		return err
-	}
-	instance, err := NewPxa(common.HexToAddress(conf.Config.Eth.PxaAddr), cli)
-	if err != nil {
-		fmt.Println("failed to eth.StorageVoteCount eths.NewPxa", err)
-		return err
-	}
+func StorageVoteCount() {
 	// 查询vote数据库中的token_id 进行遍历
 	CountStorage = Assets{}
-	// 根据token_id, 进行去重, 获取唯一token_id
-	datalist := services.NewVoteService().GetAll()
-
-	if len(datalist) >= 1 {
+	datalist := services.NewvotecountService().GetAll()
+	log.Printf("StorageVoteCount datalist: %#v \n", datalist)
+	if len(datalist) >= 2 {
 		// string -> [32]byte
 		for _, data := range datalist {
 			newTokenID := int64(data.TokenId)
-			newAsset, err := instance.Assets(nil, big.NewInt(newTokenID))
-			if err != nil {
-				fmt.Println("failed to eth.StorageVoteCount instance.Assets", err)
-				return err
-			}
-			CountStorage = append(CountStorage, voteAsset{newTokenID, newAsset.VoteCount.Int64()})
-
+			num := utils.GetVoteCountNum(newTokenID)
+			CountStorage = append(CountStorage, voteAsset{newTokenID, num})
 		}
 		if len(CountStorage) >= 2 {
 			fmt.Println("CountStorage is not nil, start refresh award......")
 			CountStorage.Award(timeout)
 		}
-
 	}
-
-	return err
 }
 
 // ViewVoteCount ...

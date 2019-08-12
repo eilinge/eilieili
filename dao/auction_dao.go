@@ -45,7 +45,7 @@ func (d *AuctionDao) Update(data *models.Auction, columns []string) error {
 
 func (d *AuctionDao) Delete(id int) error {
 	data := &models.Auction{TokenId: id, Status: 1}
-	_, err := d.engine.Id(data.TokenId).Update(data)
+	_, err := d.engine.Id(data.TokenId).Update(&data)
 	return err
 }
 

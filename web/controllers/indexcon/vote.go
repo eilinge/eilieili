@@ -6,10 +6,9 @@ import (
 	"math"
 	"strconv"
 
-	"eilieili/comm"
+	"eilieili/conf"
 	"eilieili/datasource"
 	"eilieili/eths"
-	"eilieili/models"
 	"eilieili/web/utils"
 
 	"github.com/kataras/iris"
@@ -94,19 +93,11 @@ func (c *IndexController) GetVote() error {
 		return err
 	}
 	// 4. 存储到数据库
-	voteObj := models.Vote{
-		Address:  address,
-		TokenId:  int(tokenID),
-		VoteTime: comm.NowUnix(),
-	}
-	err = c.ServiceVote.Create(&voteObj)
-	if err != nil {
-		fmt.Println("failed to VoteSQL")
-		resp.Errno = utils.RECODE_DATAERR
-		return err
-	}
-	// 5. 操作以太坊, 进行投票, 只能合约内将erc20 token转给tokenID的地址(成本较高, 还需ether在链上投票, 需要等链上确认)
-	// eths.VoteTo(address, conf.Config.Eth.FundationPWD, tokenID)
+	// StoreVotecountSQL(int(tokenID))
+	// 5. 操作以太坊, 进行投票, 只能在合约内将erc20 token转给tokenID的地址(成本较高, 还需ether在链上投票, 需要等链上确认)
+	eths.VoteTo(address, conf.Config.Eth.FundationPWD, tokenID)
 	// 5.1 使用redis缓存, 在redis上进行投票, 减少ether花费
+	// utils.IncrVoteCountNum(int(tokenID))
+	StoreVotecount(int(tokenID))
 	return nil
 }

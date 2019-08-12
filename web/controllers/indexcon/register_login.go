@@ -30,6 +30,7 @@ func (c *IndexController) GetLogin() mvc.Result {
 
 // GetRegister 登录 GET /register
 func (c *IndexController) GetRegister() mvc.Result {
+	log.Println("rediect url: /register")
 	return mvc.View{
 		Name: "register.html",
 		Data: iris.Map{
@@ -75,6 +76,7 @@ func (c *IndexController) PostRegister() {
 		resp.Errno = utils.RECODE_IPCERR
 		return
 	}
+	log.Println("eths.NewAcc address: ", address)
 	go func() {
 		err = eths.EthErc20Transfer(conf.Config.Eth.Fundation, conf.Config.Eth.FundationPWD, address, 5)
 		if err != nil {
@@ -111,7 +113,7 @@ func (c *IndexController) PostRegister() {
 	c.setSession(account.UserName, account.IdentitiyID)
 	// username, passwd := c.getSession()
 	// fmt.Println("the user: ", username, passwd)
-	comm.Redirect(c.Ctx.ResponseWriter(), "/login")
+	// comm.Redirect(c.Ctx.ResponseWriter(), "/login")
 }
 
 // PostLogin ...

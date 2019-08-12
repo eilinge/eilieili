@@ -40,8 +40,8 @@ func (d *VoteDao) Create(data *models.Vote) error {
 }
 
 func (d *VoteDao) GetByTokenid(id int) *models.Vote {
-	data := &models.Vote{TokenId: id}
-	ok, err := d.engine.Get(data)
+	data := &models.Vote{}
+	ok, err := d.engine.Where("token_id=?", id).Get(data)
 	if ok && err == nil {
 		return data
 	}
@@ -49,9 +49,9 @@ func (d *VoteDao) GetByTokenid(id int) *models.Vote {
 	return data
 }
 
-func (v *VoteDao) GetAll() []models.Vote {
+func (d *VoteDao) GetAll() []models.Vote {
 	datalist := []models.Vote{}
-	err := v.engine.Distinct("token_id").Find(&datalist)
+	err := d.engine.Distinct("token_id").Find(&datalist)
 	if err != nil {
 		return nil
 	}
