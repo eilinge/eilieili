@@ -46,6 +46,11 @@ func (s Assets) Len() int           { return len(s) }
 func (s Assets) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s Assets) Less(i, j int) bool { return s[i].Count > s[j].Count }
 
+// NewAssets init Assets
+func NewAssets() Assets {
+	return []voteAsset{}
+}
+
 // TranDetail ...
 type TranDetail struct {
 	From common.Address `json:"from"`
@@ -290,11 +295,11 @@ func VoteTo(from, pass string, tokenID int64) error {
 	return nil
 }
 
-// StorageVoteCount ...
-func StorageVoteCount() {
+// storageVoteCount ...
+func storageVoteCount() {
 	// 查询vote数据库中的token_id 进行遍历
 	CountStorage = Assets{}
-	datalist := services.NewvotecountService().GetAll()
+	datalist := services.NewAuctionService().GetAllTokenId()
 	log.Printf("StorageVoteCount datalist: %#v \n", datalist)
 	if len(datalist) >= 2 {
 		// string -> [32]byte
@@ -310,8 +315,15 @@ func StorageVoteCount() {
 	}
 }
 
-// ViewVoteCount ...
-func (s Assets) ViewVoteCount() (newS Assets) {
+// VoteCount ...
+func (s Assets) VoteCount() {
+	s.viewVoteCount()
+}
+
+// viewVoteCount ...
+func (s Assets) viewVoteCount() (newS Assets) {
+	storageVoteCount()
+	log.Println("newS: ", newS)
 	sort.Sort(s)
 	// fmt.Println(s)
 	newS = s[:2]
@@ -346,7 +358,7 @@ func (s *Assets) Award(timeout <-chan time.Time) {
 
 				fmt.Println("---------------------------------------------")
 				fmt.Println("watch ranking ................", i)
-				s.ViewVoteCount()
+				s.viewVoteCount()
 				i++
 			// 10分钟之后, 选出前3名, 获取token_id, address, 进行转账erc20, 第一名1000, 第二名500
 			// 使用集合, 将每一位作品与相应奖品金额绑定
@@ -358,7 +370,7 @@ func (s *Assets) Award(timeout <-chan time.Time) {
 					fmt.Println("=====================================")
 					break
 				}
-				newS := s.ViewVoteCount()
+				newS := s.viewVoteCount()
 				// 从auction 和vote中, 找出token_id 对应的address
 				// 第一名newS[0].tokenID
 

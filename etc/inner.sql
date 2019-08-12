@@ -2,7 +2,7 @@ use eilieili;
 
 -- select * from account_content;
 -- select a.content_hash,weight,a.title,b.token_id from content a, account_content b where a.content_hash = b.content_hash and address = "0xc8357fd9e82aa6366853d57e36156918eddb2929";
-select a.content_hash,weight,a.title,b.token_id from content a, account_content b where a.content_hash = b.content_hash;
+select weight,a.*,b.token_id,address from content a, account_content b where a.content_hash = b.content_hash;
 -- create table `group` 
 -- (
 -- 	id int(10) unsigned not null primary key auto_increment,

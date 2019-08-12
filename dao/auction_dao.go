@@ -75,3 +75,15 @@ func (d *AuctionDao) GetByContentHash(hash string) *models.Auction {
 	data.ContentHash = ""
 	return data
 }
+
+func (d *AuctionDao) GetAllTokenId() []models.Auction {
+
+	datalist := []models.Auction{}
+	err := d.engine.
+		Cols("token_id").
+		Find(&datalist)
+	if err != nil {
+		return datalist
+	}
+	return datalist
+}

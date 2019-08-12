@@ -22,6 +22,7 @@ type AccountService interface {
 	Create(data *models.Account) error
 	GetByEmail(email string) (*models.Account, error)
 	GetByUserName(usr string) (*models.Account, error)
+	GetByUserAddr(usr string) (*models.Account, error)
 }
 
 type accountService struct {
@@ -52,4 +53,8 @@ func (s *accountService) GetByEmail(email string) (*models.Account, error) {
 
 func (s *accountService) GetByUserName(usr string) (*models.Account, error) {
 	return s.dao.GetByUserName(usr)
+}
+
+func (s *accountService) GetByUserAddr(usr string) (*models.Account, error) {
+	return s.dao.GetByUserAddr(usr)
 }

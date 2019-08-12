@@ -24,6 +24,7 @@ type AuctionService interface {
 	Create(data *models.Auction) error
 	GetByStatus(id, status int) *models.Auction
 	GetByContentHash(hash string) *models.Auction
+	GetAllTokenId() []models.Auction
 }
 
 type auctionService struct {
@@ -60,4 +61,8 @@ func (s *auctionService) GetByStatus(id, status int) *models.Auction {
 }
 func (s *auctionService) GetByContentHash(hash string) *models.Auction {
 	return s.dao.GetByContentHash(hash)
+}
+
+func (s *auctionService) GetAllTokenId() []models.Auction {
+	return s.dao.GetAllTokenId()
 }

@@ -49,11 +49,21 @@ func (d *AccountDao) GetByEmail(email string) (*models.Account, error) {
 }
 
 func (d *AccountDao) GetByUserName(usr string) (*models.Account, error) {
-	data := &models.Account{Username: usr}
-	ok, err := d.engine.Get(data)
+	data := &models.Account{}
+	ok, err := d.engine.Where("username=?", usr).Get(data)
 	if ok && err == nil {
 		return data, nil
 	}
 	data.Username = ""
+	return data, err
+}
+
+func (d *AccountDao) GetByUserAddr(usr string) (*models.Account, error) {
+	data := &models.Account{}
+	ok, err := d.engine.Cols("address").Where("username=?", usr).Get(data)
+	if ok && err == nil {
+		return data, nil
+	}
+	data.Address = ""
 	return data, err
 }

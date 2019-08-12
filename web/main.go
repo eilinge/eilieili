@@ -7,6 +7,8 @@ curl http://localhost:8888/lucky
 */
 import (
 	"fmt"
+	"log"
+	"time"
 
 	"eilieili/bootstrap"
 	"eilieili/conf"
@@ -31,9 +33,14 @@ func newApp() *bootstrap.Bootstrapper {
 
 	return app
 }
+
+func StartAward() {
+	log.Println("startinng award ...")
+	time.AfterFunc(10*time.Second, eths.NewAssets().VoteCount)
+}
 func main() {
 	app := newApp()
 	go eths.EventSubscribe("ws://localhost:8546", conf.Config.Eth.PxaAddr)
-	go eths.StorageVoteCount()
+	go StartAward()
 	app.Listen(fmt.Sprintf(":%d", port))
 }

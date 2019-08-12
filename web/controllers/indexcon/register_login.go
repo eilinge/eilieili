@@ -133,7 +133,9 @@ func (c *IndexController) PostLogin() {
 
 	//3. 操作Mysql查询数据
 	pwd := fmt.Sprintf("%x", sha256.Sum256([]byte(account.IdentitiyID)))
+	log.Println("pwd: ", pwd)
 	acc, err := c.ServiceAccount.GetByUserName(account.UserName)
+	log.Println("acc.IdentityId: ", acc.IdentityId)
 	if err != nil || pwd != acc.IdentityId {
 		fmt.Println("failed index.PostLogin GetByUserName err: ", err)
 		resp.Errno = utils.RECODE_IPCERR

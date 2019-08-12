@@ -125,9 +125,16 @@ func (c *IndexController) PostContent() error {
 
 // GetContents ...
 func (c *IndexController) GetContents() mvc.Result {
-	//1. 获取所有资产
+	//1. 通过cookies, 获取address, 然后读取出其所有资产
+	userObj := comm.GetLoginUser(c.Ctx.Request())
+	acc, err := c.ServiceAccount.GetByUserAddr(userObj.Username)
+	if err != nil || acc.Address == "" {
+		log.Println("failed to GetByUserAddr err ", err)
+		return nil
+	}
+	log.Println("acc obj address: ", acc.Address)
 	dao := utils.NewContentinfoService(datasource.InstanceDbMaster())
-	contents, num, err := dao.InnerContent("0xdf7a28dfa5675a77d9f8b9699bb8d5614c000c39")
+	contents, num, err := dao.InnerContent(acc.Address)
 	if err != err || num <= 0 {
 		log.Println("failed to GetContents err ", err)
 		return nil

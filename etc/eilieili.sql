@@ -118,7 +118,6 @@ CREATE TABLE `lt_userday`
    UNIQUE KEY `uid_day`(`uid`, `day`)
 )ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
-
 DROP TABLE IF EXISTS `lt_user`;
 
 CREATE TABLE `lt_user`
@@ -134,10 +133,6 @@ CREATE TABLE `lt_user`
    `sys_ip` varchar(50)NOT NULL DEFAULT '' COMMENT 'IP地址',
    PRIMARY KEY(`id`)
 )ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4;
-
-
-drop table if exists `group`;
-drop table if exists `user`;
 
 delete from `account`;
 delete from `vote`;
