@@ -348,7 +348,6 @@ func GetPxcBalance(from string) (int64, error) {
 }
 
 // Award ...
-// TODO: 对发放奖品需要进行改进, 不需要在点击投票之后, 才进行发奖
 func (s *Assets) Award(timeout <-chan time.Time) {
 	go func() {
 		for {
