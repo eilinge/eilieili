@@ -1,0 +1,44 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+// 编码实现：启动三个协程,第一个协程将0,1,2,3……依次传递给第二个协程,
+// 第二个协程将得到的数字平方后传递给第三个协程,第三个协程负责打印得到的数字
+
+// 三个协程(相互通信)
+// 一个channal
+
+var chanTrans chan uint8
+
+func transfer() {
+	var n1 uint8
+	for {
+		n := <-chanTrans
+		n1 = n * n
+		chanTrans <- n1
+		go receive(chanTrans, n1)
+	}
+}
+
+func receive(ch chan uint8, n uint8) {
+	for {
+		m := <-ch
+		fmt.Println(m)
+	}
+}
+
+func main() {
+	chanTrans = make(chan uint8)
+	defer close(chanTrans)
+	var i uint8
+	go transfer()
+	go func() {
+		for i = 0; i < 10; i++ {
+			chanTrans <- i
+		}
+	}()
+	time.Sleep(time.Second * 2)
+}
