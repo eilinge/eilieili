@@ -1,0 +1,147 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"math/rand"
+	"sync"
+	"time"
+)
+
+var (
+	ch   chan int
+	full chan int
+)
+
+func init() {
+	//以时间作为初始化种子
+	rand.Seed(time.Now().Unix())
+}
+
+func main() {
+	var m [6][7]int
+	if checkinit(&m) {
+		m = [6][7]int{}
+		printM(&m)
+		log.Println("checkbroad init success ...")
+	}
+
+	ticker1 := time.NewTicker(2 * time.Second)
+	time.Sleep(1 * time.Second)
+	ticker2 := time.NewTicker(2 * time.Second)
+	var wg sync.WaitGroup
+	wg.Add(1)
+	var i int
+	full = make(chan int)
+	ch = make(chan int, 1)
+	defer close(full)
+	go func() {
+		defer wg.Done()
+		fmt.Println("child goroutine bootstrap start")
+		for {
+			select {
+			case <-ticker1.C:
+				fmt.Println("the time now: ", i)
+				i++
+				ch <- 1
+				putBlack(1, &m, full, ch)
+
+			case <-ticker2.C:
+				fmt.Println("the time now: ", i)
+				i++
+				ch <- 1
+				putWhite(2, &m, full, ch)
+			case <-full:
+				fmt.Println("work well .")
+				ticker1.Stop()
+				ticker2.Stop()
+				return
+			}
+		}
+	}()
+	time.Sleep(5 * time.Second)
+	wg.Wait()
+	printM(&m)
+}
+
+func getPiece(x int, m *[6][7]int, full chan int, ch chan int) {
+	var i, j int
+	<-ch
+	if checkfull(m) {
+		log.Println("the checkbroad is full")
+		full <- 1
+	}
+	for {
+		i = rand.Intn(6)
+		j = rand.Intn(7)
+		var piece [6][7]int
+		piece[i][j] = x
+
+		if exists(piece, m) {
+			break
+		}
+	}
+	m[i][j] = x
+	if x == 1 {
+		log.Println("put black piece")
+	} else {
+		log.Println("put white piece")
+	}
+}
+
+// putBlack get black and put
+func putBlack(b int, m *[6][7]int, full chan int, ch chan int) {
+	go getPiece(b, m, full, ch)
+}
+
+// putWhite get white and put
+func putWhite(w int, m *[6][7]int, full chan int, ch chan int) {
+	go getPiece(w, m, full, ch)
+}
+
+// checkfull ...
+func checkfull(p *[6][7]int) bool {
+	for i, v := range p {
+		for j, _ := range v {
+			if p[i][j] == 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// printM print checkbroad
+func printM(m *[6][7]int) {
+	log.Println("Print checkbroad ...")
+	for i := 0; i < 6; i++ {
+		for j := 0; j < 7; j++ {
+			fmt.Print(m[i][j], " ")
+		}
+		fmt.Println()
+	}
+}
+
+// exists check exists
+func exists(piece [6][7]int, n *[6][7]int) bool {
+	for i, v := range piece {
+		for j, _ := range v {
+			if piece[i][j] != 0 && n[i][j] != 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// checkinit check checkbroad init
+func checkinit(m *[6][7]int) bool {
+	for i := 0; i < 6; i++ {
+		for j := 0; j < 7; j++ {
+			if m[i][j] != 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
