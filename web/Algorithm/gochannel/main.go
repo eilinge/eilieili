@@ -61,31 +61,39 @@ func main02() {
 	}
 }
 
-func woker(i int, jobs <-chan int, ch2 chan<- int) {
-	for tmp := range jobs {
+func woker(i int, jobs chan int, ch2 chan<- int) {
+	defer close(jobs)
+	defer close(ch2)
+	for {
+		tmp, ok := <-jobs
+		if !ok {
+			break
+		}
 		fmt.Printf("the goroute: %d, tmp: %d \n", i, tmp)
 		ch2 <- tmp * 3
 	}
-	wg.Done()
 }
 
 func main() {
-	wg.Add(3)
 	ch2 := make(chan int, 5)
 	jobs := make(chan int, 5)
+
 	for i := 1; i <= 3; i++ {
+		// 开启3个goroute
 		go woker(i, jobs, ch2)
 	}
-	for i := 0; i < 5; i++ {
-		jobs <- i
+	// 5个任务
+	for i := 1; i <= 5; i++ {
+		go func(i int) {
+			jobs <- i
+		}(i)
 	}
-	defer close(jobs)
-	// defer close(ch2)
+	// ch2无数据时, 需要进行关闭, 否则会造成死锁
 	// for v := range ch2 {
 	// 	fmt.Println("the value: ", v)
 	// }
-	for i := 1; i <= 3; i++ {
-		fmt.Println("the value: ", <-ch2)
+	for i := 1; i <= 5; i++ {
+		tmp := <-ch2
+		fmt.Println("the value: ", tmp)
 	}
-	wg.Wait()
 }
