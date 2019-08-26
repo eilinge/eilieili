@@ -2,10 +2,17 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"sync"
 )
 
 var wg sync.WaitGroup
+
+const (
+	N = 1 << (10 * iota)
+	M
+	Y
+)
 
 func print(chan1 <-chan int) {
 	// defer wg.Done()
@@ -61,7 +68,7 @@ func main02() {
 	}
 }
 
-func woker(i int, jobs chan int, ch2 chan<- int) {
+func Woker(i int, jobs chan int, ch2 chan<- int) {
 	defer close(jobs)
 	defer close(ch2)
 	for {
@@ -80,7 +87,7 @@ func main() {
 
 	for i := 1; i <= 3; i++ {
 		// 开启3个goroute
-		go woker(i, jobs, ch2)
+		go Woker(i, jobs, ch2)
 	}
 	// 5个任务
 	for i := 1; i <= 5; i++ {
@@ -96,4 +103,12 @@ func main() {
 		tmp := <-ch2
 		fmt.Println("the value: ", tmp)
 	}
+	ConstPrint()
+	// fmt.Println("n, m, y = ", n, m, y)
+}
+
+func ConstPrint() (int, int, int) {
+	my := fmt.Sprintf("the vale: %d %d %d", N, M, Y)
+	log.Println(my)
+	return N, M, Y
 }

@@ -14,7 +14,7 @@ import (
 
 // AdminController 其他用户访问界面
 type AdminController struct {
-	Ctx                   iris.Context // 解析前端传来的数据
+	Ctx                   iris.Context // 解析前端传来的数据/响应数据给后端
 	ServiceAccount        services.AccountService
 	ServiceAccountContent services.AccountContentService
 	ServiceAuction        services.AuctionService
